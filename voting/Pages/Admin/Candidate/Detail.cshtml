@@ -1,0 +1,788 @@
+﻿@page "{candidateId:Guid}/{electionId:Guid}"
+@model voting.Pages.Admin.Candidate.DetailModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جزئیات آراء کاندیدا | پنل مدیریت</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5e35b1;
+            --primary-light: #7e57c2;
+            --primary-dark: #4527a0;
+            --secondary: #26a69a;
+            --accent: #ff7043;
+            --light: #f5f5f5;
+            --dark: #263238;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ef5350;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --sidebar: #2c3e50;
+            --sidebar-hover: #34495e;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        @@font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* سایدبار */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            right: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+            .sidebar-header h2 {
+                display: flex;
+                align-items: center;
+                font-size: 1.3rem;
+            }
+
+                .sidebar-header h2 i {
+                    margin-left: 0.5rem;
+                    color: var(--accent);
+                }
+
+        .sidebar-menu {
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+            .menu-item a {
+                display: flex;
+                align-items: center;
+                padding: 0.8rem 1rem;
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+                border-radius: 5px;
+                transition: all 0.3s;
+            }
+
+                .menu-item a:hover, .menu-item a.active {
+                    background-color: var(--sidebar-hover);
+                    color: white;
+                }
+
+                .menu-item a i {
+                    margin-left: 0.5rem;
+                    width: 20px;
+                    text-align: center;
+                }
+
+        /* محتوای اصلی */
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* هدر */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .header h1 {
+                color: var(--primary-dark);
+                font-size: 1.8rem;
+                display: flex;
+                align-items: center;
+            }
+
+                .header h1 i {
+                    margin-left: 0.5rem;
+                    color: var(--primary);
+                }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        /* Overlay برای زمانی که منو باز است */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar.active + .overlay {
+            display: block;
+        }
+
+        /* منوی همبرگری برای موبایل */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: 1rem;
+            z-index: 1100;
+        }
+
+        /* استایل‌های صفحه جزئیات کاندیدا */
+        .candidate-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .candidate-header::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            }
+
+        .candidate-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .candidate-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-left: 1.5rem;
+            border: 4px solid rgba(255,255,255,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+        }
+
+            .candidate-avatar i {
+                font-size: 2.5rem;
+            }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .candidate-election {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .candidate-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+            .meta-item i {
+                margin-left: 0.5rem;
+            }
+
+        /* آمار کلی */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-left: 1rem;
+        }
+
+        .icon-primary {
+            background-color: #ede7f6;
+            color: var(--primary);
+        }
+
+        .icon-success {
+            background-color: #e8f5e9;
+            color: var(--success);
+        }
+
+        .icon-accent {
+            background-color: #fff3e0;
+            color: var(--accent);
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* لیست رای‌دهندگان */
+        .voters-section {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            font-size: 1.3rem;
+        }
+
+            .section-title i {
+                margin-left: 0.5rem;
+            }
+
+        .voters-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+            .voters-table th, .voters-table td {
+                padding: 1rem;
+                text-align: right;
+                border-bottom: 1px solid #eee;
+            }
+
+            .voters-table th {
+                background-color: #f8f9fa;
+                color: var(--text-secondary);
+                font-weight: 600;
+            }
+
+            .voters-table tr:hover {
+                background-color: #f5f5f5;
+            }
+
+        .voter-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+        }
+
+            .voter-avatar i {
+                font-size: 1.2rem;
+
+            }
+
+        .vote-count {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            background-color: #e0f7fa;
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        /* دکمه‌ها */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn i {
+                margin-left: 0.5rem;
+            }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+            .btn-outline:hover {
+                background-color: var(--primary);
+                color: white;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        /* پجینیشن */
+        .pagination-container {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pagination {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+            .pagination-link:hover {
+                background-color: #e0e0e0;
+            }
+
+            .pagination-link.active {
+                background-color: var(--primary);
+                color: white;
+                font-weight: 600;
+            }
+
+        /* ریسپانسیو */
+        @@media (max-width: 1200px) {
+            .candidate-header {
+                padding: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                width: 300px;
+            }
+
+                .sidebar.active {
+                    transform: translateX(0);
+                }
+
+            .main-content {
+                margin-right: 0;
+                width: 100%;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .candidate-title {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .candidate-avatar {
+                margin-left: 0;
+                margin-bottom: 1.5rem;
+            }
+
+            .candidate-meta {
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .header {
+                flex-wrap: wrap;
+            }
+
+                .header h1 {
+                    font-size: 1.5rem;
+                    margin-bottom: 1rem;
+                }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .voters-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+                .voters-table th,
+                .voters-table td {
+                    padding: 0.8rem;
+                }
+
+            .stat-card {
+                padding: 1.2rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-profile {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 85%;
+            }
+
+            .candidate-name {
+                font-size: 1.5rem;
+            }
+
+            .candidate-election {
+                font-size: 1rem;
+            }
+
+            .meta-item {
+                font-size: 0.8rem;
+            }
+
+            .voters-table th:nth-child(1),
+            .voters-table td:nth-child(1) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+ 
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-user-shield"></i> پنل مدیریت</h2>
+        </div>
+        <div class="sidebar-menu">
+
+            <div class="menu-item">
+                <a href="/Admin/Election/Index"><i class="fas fa-vote-yea"></i> انتخابات‌ها</a>
+            </div>
+            <div class="menu-item">
+                <a href="/Index"><i class="fas fa-home"></i> ‌صفحه اصلی</a>
+            </div>
+            <div class="menu-item">
+                <a href="/Logout"><i class="fas fa-sign-out-alt"></i> خروج از حساب</a>
+            </div>
+        </div>
+    </div>
+    <!-- Overlay برای بستن منو -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- محتوای اصلی -->
+    <div class="main-content">
+        <div class="header">
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1><i class="fas fa-chart-bar"></i> جزئیات آراء کاندیدا</h1>
+            </div>
+            <div class="user-profile">
+                <div class="user-info">
+                    <div class="user-name">مدیر سایت</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- هدر کاندیدا -->
+        <div class="candidate-header">
+            <div class="candidate-title">
+                <div class="candidate-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="candidate-info">
+                    <div class="candidate-election">@Model.Election.Title</div>
+                    <h1 class="candidate-name">@Model.Candidate.FullName</h1>
+
+                    <div class="candidate-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-vote-yea"></i> مجموع آراء: @(Model.FilterResult.Data.Sum(i => i.VotesId.Count())) رأی
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-friends"></i> تعداد رای‌دهندگان: @Model.FilterResult.EntityCount نفر
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- آمار کلی -->
+        <div class="stats-container">
+            @*    <div class="stat-card">
+                <div class="stat-icon icon-primary">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">@(Model.Candidate..Count())</div>
+                    <div class="stat-label">مجموع آراء</div>
+                </div>
+            </div> *@
+
+            <div class="stat-card">
+                <div class="stat-icon icon-success">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">@Model.FilterResult.EntityCount</div>
+                    <div class="stat-label">تعداد رای‌دهندگان</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- لیست رای‌دهندگان -->
+        <div class="voters-section">
+            <h2 class="section-title"><i class="fas fa-users"></i> لیست رای‌دهندگان</h2>
+
+            <table class="voters-table">
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>رای‌دهنده</th>
+                        <th>شماره تماس</th>
+                        <th>تعداد رأی</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.FilterResult.Data.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem;">
+                                رای ثبت شده‌ای برای این کاندیدا وجود ندارد.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int i = 0;
+                        foreach (var item in Model.FilterResult.Data)
+                        {
+                            <tr>
+                                <td>@(++i)</td>
+                                <td>
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="voter-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div style="margin-right: 1rem;">@item.FullName</div>
+                                    </div>
+                                </td>
+                                <td>@item.PhoneNumber</td>
+                                <td><span class="vote-count">@item.VoteAccessNumber رأی</span></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <!-- پجینیشن -->
+            @if (Model.FilterResult.PageCount > 1)
+            {
+                <div class="pagination-container">
+                    <ul class="pagination">
+                        @if (Model.FilterResult.CurrentPage > 1)
+                        {
+                            <li>
+                                <a href="?PageId=@(Model.FilterResult.CurrentPage - 1)&Take=@Model.FilterResult.Take"
+                                   class="pagination-link">
+                                    قبلی
+                                </a>
+                            </li>
+                        }
+
+                        @for (int p = Model.FilterResult.StartPage; p <= Model.FilterResult.EndPage; p++)
+                        {
+                            <li>
+                                <a href="?PageId=@p&Take=@Model.FilterResult.Take"
+                                   class="pagination-link @(p == Model.FilterResult.CurrentPage ? "active" : "")">
+                                    @p
+                                </a>
+                            </li>
+                        }
+
+                        @if (Model.FilterResult.CurrentPage < Model.FilterResult.PageCount)
+                        {
+                            <li>
+                                <a href="?PageId=@(Model.FilterResult.CurrentPage + 1)&Take=@Model.FilterResult.Take"
+                                   class="pagination-link">
+                                    بعدی
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+
+        <!-- دکمه‌های عملیاتی -->
+        <div class="action-buttons">
+            <button onclick="location.href='/Admin/Election/Detail/@Model.ElectionId'" class="btn btn-outline">
+                <i class="fas fa-arrow-right"></i> بازگشت به جزئیات انتخابات
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // مدیریت منوی موبایل
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const overlay = document.getElementById('overlay');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+        });
+
+        // بستن منو هنگام کلیک خارج از آن
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) &&
+                event.target !== mobileMenuBtn &&
+                !mobileMenuBtn.contains(event.target) &&
+                event.target !== overlay) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+    </script>
+</body>
+</html>

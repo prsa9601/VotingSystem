@@ -1,0 +1,932 @@
+﻿@page
+@model voting.Pages.Admin.User.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت رای‌دهندگان - سامانه انتخابات آنلاین</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5e35b1;
+            --primary-light: #7e57c2;
+            --primary-dark: #4527a0;
+            --secondary: #26a69a;
+            --accent: #ff7043;
+            --light: #f5f5f5;
+            --dark: #263238;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ef5350;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --sidebar: #2c3e50;
+            --sidebar-hover: #34495e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        @@font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* سایدبار */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            right: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+            .sidebar-header h2 {
+                display: flex;
+                align-items: center;
+                font-size: 1.3rem;
+            }
+
+                .sidebar-header h2 i {
+                    margin-left: 0.5rem;
+                    color: var(--accent);
+                }
+
+        .sidebar-menu {
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+            .menu-item a {
+                display: flex;
+                align-items: center;
+                padding: 0.8rem 1rem;
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+                border-radius: 5px;
+                transition: all 0.3s;
+            }
+
+                .menu-item a:hover, .menu-item a.active {
+                    background-color: var(--sidebar-hover);
+                    color: white;
+                }
+
+                .menu-item a i {
+                    margin-left: 0.5rem;
+                    width: 20px;
+                    text-align: center;
+                }
+
+        /* محتوای اصلی */
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* هدر */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .header h1 {
+                color: var(--primary-dark);
+                font-size: 1.8rem;
+                display: flex;
+                align-items: center;
+            }
+
+                .header h1 i {
+                    margin-left: 0.5rem;
+                    color: var(--primary);
+                }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+            .user-profile img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-left: 0.5rem;
+            }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* فرم افزودن رای‌دهنده */
+        .add-voter-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+            .form-title i {
+                margin-left: 0.5rem;
+            }
+
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: var(--primary-dark);
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f8fafc;
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary-light);
+                box-shadow: 0 0 0 3px rgba(94, 53, 177, 0.1);
+                background-color: white;
+            }
+
+        .phone-input {
+            display: flex;
+            align-items: center;
+        }
+
+        .phone-prefix {
+            padding: 0.8rem;
+            background-color: #edf2f7;
+            border: 1px solid #e2e8f0;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .phone-number {
+            flex: 1;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn i {
+                margin-left: 0.5rem;
+            }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(94, 53, 177, 0.2);
+            }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #4caf50;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+            }
+
+        /* جدول رای‌دهندگان */
+        .voters-table {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+            .table-header h2 {
+                font-size: 1.3rem;
+                color: var(--primary-dark);
+            }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+            .btn-outline:hover {
+                background-color: var(--primary);
+                color: white;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+            .status.active {
+                background-color: #e3f2fd;
+                color: #1976d2;
+            }
+
+            .status.inactive {
+                background-color: #ffebee;
+                color: #c62828;
+            }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            margin: 0 0.3rem;
+            transition: color 0.3s;
+        }
+
+            .action-btn:hover {
+                color: var(--primary);
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        /* مودال */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 500px;
+            max-width: 90%;
+            padding: 2rem;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s;
+        }
+
+        @@keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #e53935;
+            }
+
+        /* Overlay برای زمانی که منو باز است */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar.active + .overlay {
+            display: block;
+        }
+
+        /* منوی همبرگری برای موبایل */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: 1rem;
+            z-index: 1100;
+        }
+
+        /* ریسپانسیو */
+        @@media (max-width: 1200px) {
+            .form-row {
+                gap: 1rem;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                width: 300px;
+            }
+
+                .sidebar.active {
+                    transform: translateX(0);
+                }
+
+            .main-content {
+                margin-right: 0;
+                width: 100%;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .add-voter-form {
+                padding: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .table-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+                .table-actions .btn {
+                    width: 100%;
+                    margin-bottom: 0.5rem;
+                }
+
+            .voters-table {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 700px;
+            }
+
+            .add-voter-form {
+                padding: 1.2rem;
+            }
+
+            .header {
+                flex-wrap: wrap;
+            }
+
+                .header h1 {
+                    margin-bottom: 1rem;
+                }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-profile {
+                margin-top: 1rem;
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .add-voter-form {
+                padding: 1rem;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+                .modal-footer .btn {
+                    width: 100%;
+                }
+
+            .sidebar {
+                width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- سایدبار -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-user-shield"></i> پنل مدیریت</h2>
+        </div>
+        <div class="sidebar-menu">
+
+            <div class="menu-item">
+                <a href="/Admin/Election/Index"><i class="fas fa-vote-yea"></i> انتخابات‌ها</a>
+            </div>
+            <div class="menu-item">
+                <a href="/Admin/User/List"><i class="fas fa-vote-yea"></i> کاربران</a>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Overlay برای بستن منو -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- محتوای اصلی -->
+    <div class="main-content">
+        <div class="header">
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1><i class="fas fa-user-friends"></i> مدیریت رای‌دهندگان</h1>
+            </div>
+            <div class="user-profile">
+                <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="مدیر سیستم">
+                <div class="user-info">
+                    <div class="user-name">محمد مدیر</div>
+                    <div class="user-role">مدیر ارشد سیستم</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- فرم افزودن رای‌دهنده -->
+        <div class="add-voter-form">
+            <h2 class="form-title"><i class="fas fa-user-plus"></i> افزودن رای‌دهنده جدید</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="fullName">نام کامل:</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="نام و نام خانوادگی">
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">شماره تلفن:</label>
+                    <div class="phone-input">
+                        <span class="phone-prefix">+98</span>
+                        <input type="tel" id="phoneNumber" class="form-control phone-number" placeholder="9123456789" maxlength="10">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>تعداد واحدها</label>
+                    <input type="number" class="form-control" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="election">انتخابات مربوطه:</label>
+                    <select id="election" class="form-control">
+                        <option value="1">انتخابات شورای شهر</option>
+                        <option value="2">انتخابات مجلس شورای اسلامی</option>
+                        <option value="3">انتخابات انجمن صنفی</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="addVoterBtn">
+                <i class="fas fa-save"></i> ذخیره رای‌دهنده
+            </button>
+        </div>
+
+        <!-- جدول رای‌دهندگان -->
+        <div class="voters-table">
+            <div class="table-header">
+                <h2><i class="fas fa-list"></i> لیست افرادی که اجازه رای دهی دارند</h2>
+             
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام کامل</th>
+                            <th>شماره تلفن</th>
+                            <th>تعداد رای</th>
+                            <th>انتخابات</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>۱</td>
+                            <td>علی محمدی</td>
+                            <td>9123456789</td>
+                            <td><span class="badge">۳ رای</span></td>
+                            <td>شورای شهر</td>
+                            <td><span class="status active">فعال</span></td>
+                            <td>
+                                <button class="action-btn" title="ویرایش"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn" title="غیرفعال کردن"><i class="fas fa-ban"></i></button>
+                                <button class="action-btn delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>۲</td>
+                            <td>فاطمه احمدی</td>
+                            <td>9334567890</td>
+                            <td><span class="badge">۵ رای</span></td>
+                            <td>مجلس شورای اسلامی</td>
+                            <td><span class="status active">فعال</span></td>
+                            <td>
+                                <button class="action-btn" title="ویرایش"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn" title="غیرفعال کردن"><i class="fas fa-ban"></i></button>
+                                <button class="action-btn delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>۳</td>
+                            <td>محمد حسینی</td>
+                            <td>9145678901</td>
+                            <td><span class="badge">۱ رای</span></td>
+                            <td>انجمن صنفی</td>
+                            <td><span class="status inactive">غیرفعال</span></td>
+                            <td>
+                                <button class="action-btn" title="ویرایش"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn activate-btn" title="فعال کردن"><i class="fas fa-check"></i></button>
+                                <button class="action-btn delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>۴</td>
+                            <td>زهرا کریمی</td>
+                            <td>9356789012</td>
+                            <td><span class="badge">۲ رای</span></td>
+                            <td>شورای شهر</td>
+                            <td><span class="status active">فعال</span></td>
+                            <td>
+                                <button class="action-btn" title="ویرایش"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn" title="غیرفعال کردن"><i class="fas fa-ban"></i></button>
+                                <button class="action-btn delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>۵</td>
+                            <td>حسین نجفی</td>
+                            <td>9167890123</td>
+                            <td><span class="badge">۳ رای</span></td>
+                            <td>مجلس شورای اسلامی</td>
+                            <td><span class="status active">فعال</span></td>
+                            <td>
+                                <button class="action-btn" title="ویرایش"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn" title="غیرفعال کردن"><i class="fas fa-ban"></i></button>
+                                <button class="action-btn delete-btn" title="حذف"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال حذف -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-exclamation-triangle"></i> تایید حذف</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <p>آیا مطمئن هستید که می‌خواهید این رای‌دهنده را حذف کنید؟ این عمل غیرقابل بازگشت است.</p>
+            <div class="modal-footer">
+                <button class="btn btn-outline close-modal">انصراف</button>
+                <button class="btn btn-danger" id="confirmDelete">حذف</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // مدیریت رای‌دهندگان
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const overlay = document.getElementById('overlay');
+            const addVoterBtn = document.getElementById('addVoterBtn');
+            const deleteModal = document.getElementById('deleteModal');
+            const closeModalBtns = document.querySelectorAll('.close-modal');
+            const confirmDeleteBtn = document.getElementById('confirmDelete');
+            const importVotersBtn = document.getElementById('importVotersBtn');
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const activateButtons = document.querySelectorAll('.activate-btn');
+
+            // مدیریت منوی موبایل
+            mobileMenuBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+            });
+
+            // بستن منو هنگام کلیک خارج از آن
+            document.addEventListener('click', function(event) {
+                if (!sidebar.contains(event.target) &&
+                    event.target !== mobileMenuBtn &&
+                    !mobileMenuBtn.contains(event.target) &&
+                    event.target !== overlay) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // افزودن رای‌دهنده جدید
+            addVoterBtn.addEventListener('click', function() {
+                const fullName = document.getElementById('fullName').value.trim();
+                const phoneNumber = document.getElementById('phoneNumber').value.trim();
+                const voteCount = document.querySelector('input[type="number"]').value;
+                const election = document.getElementById('election').value;
+
+                if (!fullName || !phoneNumber) {
+                    alert('لطفا نام کامل و شماره تلفن را وارد کنید');
+                    return;
+                }
+
+                if (phoneNumber.length !== 10 || isNaN(phoneNumber)) {
+                    alert('شماره تلفن باید 10 رقم باشد');
+                    return;
+                }
+
+                // شبیه‌سازی ارسال داده
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ذخیره...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-save"></i> ذخیره رای‌دهنده';
+                    this.disabled = false;
+
+                    // نمایش پیام موفقیت
+                    alert('رای‌دهنده با موفقیت اضافه شد');
+
+                    // ریست فرم
+                    document.getElementById('fullName').value = '';
+                    document.getElementById('phoneNumber').value = '';
+                    document.querySelector('input[type="number"]').value = '1';
+                    document.getElementById('election').value = '1';
+                }, 1500);
+            });
+
+            // مدیریت مودال حذف
+            deleteButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const name = row.cells[1].textContent;
+                    const phone = row.cells[2].textContent;
+
+                    document.querySelector('.modal-content p').innerHTML =
+                        `آیا مطمئن هستید که می‌خواهید رای‌دهنده <strong>${name}</strong> با شماره <strong>${phone}</strong> را حذف کنید؟ این عمل غیرقابل بازگشت است.`;
+
+                    deleteModal.style.display = 'flex';
+                });
+            });
+
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    deleteModal.style.display = 'none';
+                });
+            });
+
+            confirmDeleteBtn.addEventListener('click', function() {
+                // شبیه‌سازی حذف
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال حذف...';
+                this.disabled = true;
+
+                setTimeout(() => {
+                    this.innerHTML = 'حذف';
+                    this.disabled = false;
+                    deleteModal.style.display = 'none';
+                    alert('رای‌دهنده با موفقیت حذف شد');
+                }, 1000);
+            });
+
+            // وارد کردن از فایل
+            importVotersBtn.addEventListener('click', function() {
+                alert('این ویژگی در نسخه فعلی فعال نیست');
+            });
+
+            // مدیریت وضعیت رای‌دهندگان
+            activateButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const statusCell = row.querySelector('.status');
+
+                    // شبیه‌سازی فعال کردن
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    setTimeout(() => {
+                        statusCell.classList.remove('inactive');
+                        statusCell.classList.add('active');
+                        statusCell.textContent = 'فعال';
+                        this.title = 'غیرفعال کردن';
+                        this.innerHTML = '<i class="fas fa-ban"></i>';
+                        this.classList.remove('activate-btn');
+                    }, 1000);
+                });
+            });
+
+            // مدیریت غیرفعال کردن رای‌دهندگان
+            document.querySelectorAll('.action-btn[title="غیرفعال کردن"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const statusCell = row.querySelector('.status');
+
+                    // شبیه‌سازی غیرفعال کردن
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                    setTimeout(() => {
+                        statusCell.classList.remove('active');
+                        statusCell.classList.add('inactive');
+                        statusCell.textContent = 'غیرفعال';
+                        this.title = 'فعال کردن';
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        this.classList.add('activate-btn');
+                    }, 1000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

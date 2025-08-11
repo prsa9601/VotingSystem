@@ -1,0 +1,809 @@
+﻿@page "{electionId:guid}"
+@using voting.Util
+@model VotingFormModel
+@{
+    ViewData["Title"] = "فرم رای‌گیری";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فرم رای‌گیری - سامانه انتخابات آنلاین</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+
+        :root {
+            --primary: #5e35b1;
+            --primary-light: #7e57c2;
+            --primary-dark: #4527a0;
+            --secondary: #26a69a;
+            --accent: #ff7043;
+            --light: #f5f5f5;
+            --dark: #263238;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ef5350;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e1e5ee 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* هدر فرم */
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+        }
+
+            .form-header h1 {
+                color: var(--primary-dark);
+                margin-bottom: 0.75rem;
+                font-size: 1.8rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .form-header p {
+                color: var(--text-secondary);
+                font-size: 1.05rem;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+
+        /* کارت فرم */
+        .form-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        /* گروه‌های فرم */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.75rem;
+                font-weight: 600;
+                color: var(--primary-dark);
+                font-size: 1.05rem;
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f8fafc;
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary-light);
+                box-shadow: 0 0 0 3px rgba(94, 53, 177, 0.1);
+                background-color: white;
+            }
+
+        /* کاندیداها */
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .candidate-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .candidate-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                border-color: var(--primary-light);
+            }
+
+        .candidate-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .candidate-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            margin-left: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+        }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+            font-size: 1.1rem;
+        }
+
+        .candidate-id {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .vote-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .vote-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+            .vote-btn:hover {
+                background-color: var(--primary-light);
+                color: white;
+                border-color: var(--primary);
+            }
+
+        .vote-count {
+            min-width: 40px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0.5rem;
+        }
+
+        .vote-total {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .total-votes {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin: 0 0.25rem;
+        }
+
+        /* دکمه‌ها */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.9rem 1.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            color: white;
+            flex: 1;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(to right, var(--primary-dark), var(--primary));
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(94, 53, 177, 0.3);
+            }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+            .btn-outline:hover {
+                background-color: var(--primary);
+                color: white;
+            }
+
+        .btn-danger {
+            background: linear-gradient(to right, #ef5350, #f44336);
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background: linear-gradient(to right, #e53935, #d32f2f);
+            }
+
+        /* پیام‌ها */
+        .alert {
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .alert-danger {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* شماره تلفن */
+        .phone-input {
+            display: flex;
+            align-items: center;
+            max-width: 350px;
+        }
+
+        .phone-prefix {
+            padding: 0.9rem;
+            background-color: #edf2f7;
+            border: 1px solid #e2e8f0;
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .phone-number {
+            flex: 1;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* توضیحات */
+        .form-note {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* انتخابات */
+        .election-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background-color: #f8f5ff;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .election-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .election-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .election-date {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ریسپانسیو */
+        @@media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .form-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <h1><i class="fas fa-vote-yea"></i> فرم رای‌گیری الکترونیکی</h1>
+            <p>لطفا با دقت به کاندیداهای مورد نظر خود رای دهید. رای شما محرمانه خواهد ماند.</p>
+        </div>
+
+        <div class="alert alert-success" id="successAlert">...</div>
+        <div class="alert alert-danger" id="errorAlert">...</div>
+        @* 
+        <div class="alert alert-success" id="successAlert">
+            <div class="alert-content">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <div>رای شما با موفقیت ثبت شد.</div>
+                    <div>کد پیگیری: <strong id="trackingCode"></strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-danger" id="errorAlert">
+            <div class="alert-content">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorMessage"></span>
+            </div>
+        </div> *@
+
+        <form method="post" id="votingForm">
+            <div class="form-card">
+                <div class="election-info">
+                    <div class="election-icon">
+                        <i class="fas fa-vote-yea"></i>
+                    </div>
+                    <div>
+                        <div class="election-title">@Model.Election.Title</div>
+                        <div class="election-date">
+                            تا @DateConverter.ConvertToPersianDate(Model.Election.EndTime)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber"><i class="fas fa-mobile-alt"></i> شماره تلفن همراه:</label>
+                    <div class="phone-input">
+                        <span class="phone-prefix">+98</span>
+                        <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control phone-number"
+                               placeholder="9123456789" maxlength="11" required>
+                    </div>
+ 
+                </div>
+
+                <div class="form-group">
+                    <label for="fullName"><i class="fas fa-user"></i> نام و نام خانوادگی:</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control"
+                           placeholder="نام کامل خود را وارد کنید" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-users"></i> کاندیداهای مورد نظر خود را انتخاب کنید:</label>
+
+                    @if (Model.Candidates.Count == 0)
+                    {
+                        <p class="text-center">کاندیدی برای این انتخابات ثبت نشده است.</p>
+                    }
+                    else
+                    {
+                        <div class="candidates-grid" id="candidatesList">
+                            @foreach (var candidate in Model.Candidates)
+                            {
+                                <div class="candidate-card" data-candidate-id="@candidate.Id">
+                                    <div class="candidate-header">
+                                        <div class="candidate-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="candidate-info">
+                                            <div class="candidate-name">@candidate.FullName</div>
+                                            <div class="candidate-id">شناسه: @candidate.Id.ToString().Substring(0, 8)</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="vote-controls">
+                                        <button type="button" class="vote-btn decrease-vote">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                        <span class="vote-count">0</span>
+                                        <button type="button" class="vote-btn increase-vote">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="vote-total">
+                            مجموع آراء: <span class="total-votes" id="totalVotes">0</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-outline">
+                        <i class="fas fa-redo"></i> شروع مجدد
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitVoteBtn" @(Model.Candidates.Count == 0 ? "disabled" : "")>
+                        <i class="fas fa-paper-plane"></i> ثبت رای نهایی
+                    </button>
+                </div>
+            </div>
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="electionId" name="electionId" value="@Model.Election.Id" />
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('votingForm');
+            const submitBtn = document.getElementById('submitVoteBtn');
+            const totalVotesSpan = document.getElementById('totalVotes');
+
+            let totalVotes = 0;
+            let voteData = {};
+
+            // Initialize vote data for each candidate
+            document.querySelectorAll('.candidate-card').forEach(card => {
+                const candidateId = card.dataset.candidateId;
+                voteData[candidateId] = 0;
+            });
+
+            // Increase vote count
+            document.querySelectorAll('.increase-vote').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.candidate-card');
+                    const candidateId = card.dataset.candidateId;
+                    const countElement = card.querySelector('.vote-count');
+
+                    voteData[candidateId]++;
+                    countElement.textContent = voteData[candidateId];
+                    updateTotalVotes();
+                });
+            });
+
+            // Decrease vote count
+            document.querySelectorAll('.decrease-vote').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.candidate-card');
+                    const candidateId = card.dataset.candidateId;
+                    const countElement = card.querySelector('.vote-count');
+
+                    if (voteData[candidateId] > 0) {
+                        voteData[candidateId]--;
+                        countElement.textContent = voteData[candidateId];
+                        updateTotalVotes();
+                    }
+                });
+            });
+
+            // Update total votes
+            function updateTotalVotes() {
+                totalVotes = Object.values(voteData).reduce((sum, count) => sum + count, 0);
+                totalVotesSpan.textContent = totalVotes;
+                submitBtn.disabled = totalVotes === 0;
+            }
+
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Prepare vote data as flat array
+                const flatVotes = [];
+                for (const [candidateId, voteCount] of Object.entries(voteData)) {
+                    for (let i = 0; i < voteCount; i++) {
+                        flatVotes.push(candidateId);
+                    }
+                }
+
+                // Create form data
+                const formData = new FormData(this);
+
+                // Add each vote individually
+                flatVotes.forEach(vote => {
+                    formData.append('candidates', vote);
+                });
+
+                // Show loading state
+                const originalBtnHtml = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت رای...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch('', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success == true) {
+                        // Success message with SweetAlert
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'موفقیت آمیز!',
+                            html: `
+                                <div class="text-center">
+                                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                    <div class="h5">${result.message}</div>
+                                  @*  <div class="mt-2">کد پیگیری: <strong>VT-${Math.floor(Math.random() * 1000000)}</strong></div>*@
+                                </div>
+                            `,
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                confirmButton: 'btn btn-success px-4'
+                            }
+                        });
+
+                        // Reset form and vote counts
+                        form.reset();
+                        Object.keys(voteData).forEach(id => voteData[id] = 0);
+                        document.querySelectorAll('.vote-count').forEach(el => el.textContent = '0');
+                        updateTotalVotes();
+                    } else {
+                        // Error message with SweetAlert
+                        await Swal.fire({
+                            icon: 'error',
+                            title: 'خطا!',
+                            html: `
+                                <div class="text-center">
+                                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                                    <div class="h5">${result.message}</div>
+                                    ${result.description ? `<div class="mt-2 text-muted">${result.description}</div>` : ''}
+                                </div>
+                            `,
+                            confirmButtonText: 'متوجه شدم',
+                            customClass: {
+                                confirmButton: 'btn btn-danger px-4'
+                            }
+                        });
+                    }
+                } catch (error) {
+                    // Network error message
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'خطای ارتباط',
+                        text: 'خطا در ارتباط با سرور. لطفا اتصال اینترنت خود را بررسی کنید.',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            confirmButton: 'btn btn-danger px-4'
+                        }
+                    });
+                } finally {
+                    // Reset button state
+                    submitBtn.innerHTML = originalBtnHtml;
+                    submitBtn.disabled = totalVotes === 0;
+                }
+            });
+        });
+    </script>
+
+    @*   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('votingForm');
+            const submitBtn = document.getElementById('submitVoteBtn');
+            const successAlert = document.getElementById('successAlert');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const trackingCode = document.getElementById('trackingCode');
+            const totalVotesSpan = document.getElementById('totalVotes');
+
+            let totalVotes = 0;
+            let voteData = {};
+
+            // Initialize vote data for each candidate
+            document.querySelectorAll('.candidate-card').forEach(card => {
+                const candidateId = card.dataset.candidateId;
+                voteData[candidateId] = 0;
+            });
+
+            // Increase vote count
+            document.querySelectorAll('.increase-vote').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.candidate-card');
+                    const candidateId = card.dataset.candidateId;
+                    const countElement = card.querySelector('.vote-count');
+
+                    voteData[candidateId]++;
+                    countElement.textContent = voteData[candidateId];
+                    updateTotalVotes();
+                });
+            });
+
+            // Decrease vote count
+            document.querySelectorAll('.decrease-vote').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.candidate-card');
+                    const candidateId = card.dataset.candidateId;
+                    const countElement = card.querySelector('.vote-count');
+
+                    if (voteData[candidateId] > 0) {
+                        voteData[candidateId]--;
+                        countElement.textContent = voteData[candidateId];
+                        updateTotalVotes();
+                    }
+                });
+            });
+
+            // Update total votes
+            function updateTotalVotes() {
+                totalVotes = Object.values(voteData).reduce((sum, count) => sum + count, 0);
+                totalVotesSpan.textContent = totalVotes;
+
+                // Enable/disable submit button
+                submitBtn.disabled = totalVotes === 0;
+            }
+
+            // Form submission
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Prepare vote data as flat array
+                const flatVotes = [];
+                for (const [candidateId, voteCount] of Object.entries(voteData)) {
+                    for (let i = 0; i < voteCount; i++) {
+                        flatVotes.push(candidateId);
+                    }
+                }
+
+                // Create form data
+                const formData = new FormData(this);
+
+                // Add each vote individually
+                flatVotes.forEach(vote => {
+                    formData.append('candidates', vote);
+                });
+
+                // Show loading state
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ثبت رای...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch('', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // Success
+                        successAlert.style.display = 'block';
+                        errorAlert.style.display = 'none';
+                        trackingCode.textContent = 'VT-' + Math.floor(Math.random() * 1000000);
+                        form.reset();
+
+                        // Reset votes
+                        Object.keys(voteData).forEach(id => voteData[id] = 0);
+                        document.querySelectorAll('.vote-count').forEach(el => el.textContent = '0');
+                        updateTotalVotes();
+                    } else {
+                        // Error
+                        errorMessage.textContent = result.message || 'خطا در ثبت رای';
+                        errorAlert.style.display = 'block';
+                        successAlert.style.display = 'none';
+                    }
+                } catch (error) {
+                    errorMessage.textContent = 'خطا در ارتباط با سرور';
+                    errorAlert.style.display = 'block';
+                    successAlert.style.display = 'none';
+                } finally {
+                    // Reset button state
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ثبت رای نهایی';
+                    submitBtn.disabled = totalVotes === 0;
+                }
+            });
+        });
+    </script> *@
+</body>
+</html>

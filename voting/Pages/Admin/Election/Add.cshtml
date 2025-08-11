@@ -1,0 +1,933 @@
+﻿@page
+@model voting.Pages.Admin.Election.AddModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ایجاد انتخابات جدید - سامانه انتخابات آنلاین</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <style>
+        :root {
+            --primary: #5e35b1;
+            --primary-light: #7e57c2;
+            --primary-dark: #4527a0;
+            --secondary: #26a69a;
+            --accent: #ff7043;
+            --light: #f5f5f5;
+            --dark: #263238;
+            --success: #66bb6a;
+            --warning: #ffa726;
+            --danger: #ef5350;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --sidebar: #2c3e50;
+            --sidebar-hover: #34495e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        @@font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* سایدبار */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 1.5rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            right: 0;
+            top: 0;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+            .sidebar-header h2 {
+                display: flex;
+                align-items: center;
+                font-size: 1.3rem;
+            }
+
+                .sidebar-header h2 i {
+                    margin-left: 0.5rem;
+                    color: var(--accent);
+                }
+
+        .sidebar-menu {
+            padding: 0 1rem;
+        }
+
+        .menu-item {
+            margin-bottom: 0.5rem;
+        }
+
+            .menu-item a {
+                display: flex;
+                align-items: center;
+                padding: 0.8rem 1rem;
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+                border-radius: 5px;
+                transition: all 0.3s;
+            }
+
+                .menu-item a:hover, .menu-item a.active {
+                    background-color: var(--sidebar-hover);
+                    color: white;
+                }
+
+                .menu-item a i {
+                    margin-left: 0.5rem;
+                    width: 20px;
+                    text-align: center;
+                }
+
+        /* محتوای اصلی */
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        /* هدر */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+            .header h1 {
+                color: var(--primary-dark);
+                font-size: 1.8rem;
+                display: flex;
+                align-items: center;
+            }
+
+                .header h1 i {
+                    margin-left: 0.5rem;
+                    color: var(--primary);
+                }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+            .user-profile img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-left: 0.5rem;
+            }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* استایل‌های جدید */
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: var(--text-secondary);
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary);
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(94, 53, 177, 0.1);
+            }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+            .form-row .form-group {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+        .voter-units {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+            .voter-units label {
+                margin-left: 0.5rem;
+            }
+
+        .candidate-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .candidate-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+            .candidate-card.selected {
+                border-color: var(--primary);
+                background-color: #f0f7ff;
+            }
+
+        .candidate-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-left: 1rem;
+            border: 2px solid #eee;
+        }
+
+            .candidate-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .vote-count-control {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .vote-count-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #eee;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .vote-count-display {
+            margin: 0 0.8rem;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .total-votes-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .vote-submit-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            .vote-submit-btn:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+
+            .vote-submit-btn:hover:not(:disabled) {
+                background-color: #4caf50;
+            }
+
+        /* استایل تقویم شمسی */
+        .date-input-container {
+            position: relative;
+        }
+
+        .date-input-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+            pointer-events: none;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+            .btn i {
+                margin-left: 0.5rem;
+            }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(94,53,177,0.2);
+            }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+            .btn-outline:hover {
+                background-color: var(--primary);
+                color: white;
+            }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: block;
+        }
+
+        .success-message {
+            background-color: var(--success);
+            color: white;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            margin: 0 0.3rem;
+            transition: color 0.3s;
+        }
+
+            .action-btn:hover {
+                color: var(--primary);
+            }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        /* Overlay برای زمانی که منو باز است */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar.active + .overlay {
+            display: block;
+        }
+
+        /* منوی همبرگری برای موبایل */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: 1rem;
+            z-index: 1100;
+        }
+
+        /* ریسپانسیو */
+        @@media (max-width: 1200px) {
+            .candidate-selection {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+                width: 300px;
+            }
+<<<<<<< HEAD
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+=======
+
+                .sidebar.active {
+                    transform: translateX(0);
+                }
+>>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
+
+            .main-content {
+                margin-right: 0;
+                width: 100%;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .candidate-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 1.2rem;
+            }
+
+            .header {
+                flex-wrap: wrap;
+            }
+<<<<<<< HEAD
+            
+            .header h1 {
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+            }
+=======
+
+                .header h1 {
+                    margin-bottom: 1rem;
+                }
+>>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
+
+            .main-content {
+                padding: 1.5rem;
+            }
+<<<<<<< HEAD
+            
+            .btn {
+                padding: 0.8rem;
+            }
+=======
+>>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
+        }
+
+        @@media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .candidate-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .candidate-avatar {
+                margin-left: 0;
+                margin-bottom: 1rem;
+            }
+
+            .sidebar {
+                width: 85%;
+            }
+<<<<<<< HEAD
+            
+            .form-row .form-group {
+                margin-bottom: 1rem;
+            }
+            
+            .date-input-container .form-control {
+                padding-left: 2.5rem;
+            }
+            
+            .date-input-icon {
+                left: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+=======
+>>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
+        }
+    </style>
+</head>
+<body>
+    <!-- سایدبار -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-user-shield"></i> پنل مدیریت</h2>
+        </div>
+        <div class="sidebar-menu">
+
+            <div class="menu-item">
+                <a href="/Admin/Election/Index"><i class="fas fa-vote-yea"></i> انتخابات‌ها</a>
+            </div>
+            <div class="menu-item">
+                <a href="/Index"><i class="fas fa-home"></i> ‌صفحه اصلی</a>
+            </div>
+            <div class="menu-item">
+                <a href="/Logout"><i class="fas fa-sign-out-alt"></i> خروج از حساب</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Overlay برای بستن منو -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- لودینگ هنگام ارسال داده -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <div class="main-content">
+        <div class="header">
+            <div style="display: flex; align-items: center;">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1><i class="fas fa-plus-circle"></i> ایجاد انتخابات جدید</h1>
+            </div>
+        </div>
+
+        <!-- پیام‌های سیستم -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="error-message" style="display: block; background: var(--danger); color: white; padding: 1rem; margin-bottom: 1.5rem;">
+                <i class="fas fa-exclamation-circle"></i>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <span>@error.ErrorMessage</span>
+                }
+            </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="success-message" style="display: block;">
+                <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <!-- فرم ایجاد انتخابات -->
+        <form method="post" id="electionForm">
+            <!-- اطلاعات اصلی انتخابات -->
+            <div class="form-container">
+                <h2><i class="fas fa-info-circle"></i> اطلاعات اصلی انتخابات</h2>
+                <div class="form-group">
+                    <label for="electionTitle">عنوان انتخابات</label>
+                    <input type="text" id="electionTitle" name="ElectionTitle" class="form-control"
+                           placeholder="مثال: انتخابات هیئت مدیره شرکت" required
+                           value="@Model.ElectionTitle">
+                    <span class="text-danger" asp-validation-for="ElectionTitle"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group date-input-container">
+                        <label for="startDate">تاریخ شروع (شمسی)</label>
+                        <i class="fas fa-calendar-alt date-input-icon"></i>
+                        <input type="text" id="startDate" name="StartDate" class="form-control"
+                               placeholder="1402/05/01" required
+                               value="@Model.StartDate">
+                        <span class="text-danger" asp-validation-for="StartDate"></span>
+                    </div>
+                    <div class="form-group date-input-container">
+                        <label for="endDate">تاریخ پایان (شمسی)</label>
+                        <i class="fas fa-calendar-alt date-input-icon"></i>
+                        <input type="text" id="endDate" name="EndDate" class="form-control"
+                               placeholder="1402/05/15" required
+                               value="@Model.EndDate">
+                        <span class="text-danger" asp-validation-for="EndDate"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بخش کاندیداها -->
+            <div class="form-container">
+                <h2><i class="fas fa-users"></i> افزودن کاندیداها</h2>
+
+                <div id="candidatesContainer">
+                    @for (int i = 0; i < Model.Candidates.Count; i++)
+                    {
+                        <div class="form-row candidate-row">
+                            <div class="form-group">
+                                <label>نام کاندیدا</label>
+                                <input type="text" name="Candidates[@i].FullName"
+                                       class="form-control" placeholder="نام کامل کاندیدا"
+                                       value="@Model.Candidates[i].FullName">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>شماره تماس</label>
+                                <input type="tel" name="Candidates[@i].PhoneNumber"
+                                       class="form-control" placeholder="09123456789"
+                                       value="@Model.Candidates[i].PhoneNumber" maxlength="11">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="form-group" style="align-self: flex-end;">
+                                <button type="button" class="btn btn-danger remove-candidate" style="margin-top: 1.8rem;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <button type="button" class="btn btn-primary" id="addCandidateBtn">
+                    <i class="fas fa-plus"></i> افزودن کاندیدا
+                </button>
+            </div>
+
+            <!-- بخش رای‌دهندگان -->
+            <div class="form-container">
+                <h2><i class="fas fa-user-friends"></i> مدیریت رای‌دهندگان</h2>
+
+                <div id="votersContainer">
+                    @for (int i = 0; i < Model.Voters.Count; i++)
+                    {
+                        <div class="form-row voter-row">
+                            <div class="form-group">
+                                <label>شماره تلفن رای‌دهنده</label>
+                                <input type="tel" name="Voters[@i].PhoneNumber"
+                                       class="form-control" placeholder="09123456789"
+                                       value="@Model.Voters[i].PhoneNumber" maxlength="11">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>تعداد واحدها</label>
+                                <input type="number" name="Voters[@i].VoteAccessNumber"
+                                       class="form-control" value="@(Model.Voters[i].VoteAccessNumber > 0 ? Model.Voters[i].VoteAccessNumber : 1)" min="1">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="form-group" style="align-self: flex-end;">
+                                <button type="button" class="btn btn-danger remove-voter" style="margin-top: 1.8rem;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <button type="button" class="btn btn-primary" id="addVoterBtn">
+                    <i class="fas fa-user-plus"></i> افزودن رای‌دهنده
+                </button>
+            </div>
+
+            <!-- دکمه نهایی ایجاد انتخابات -->
+            <div style="text-align: left; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    <i class="fas fa-save"></i> ایجاد انتخابات
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- اسکریپت‌ها -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        // مقداردهی اولیه تقویم شمسی
+        $(document).ready(function() {
+            $('#startDate').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                initialValue: false,
+                autoClose: true,
+                observer: true,
+                calendar: {
+                    persian: {
+                        locale: 'fa'
+                    }
+                }
+            });
+
+            $('#endDate').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                initialValue: false,
+                autoClose: true,
+                observer: true,
+                calendar: {
+                    persian: {
+                        locale: 'fa'
+                    }
+                }
+            });
+        });
+
+        // مدیریت کاندیداها
+        document.getElementById('addCandidateBtn').addEventListener('click', function() {
+            const container = document.getElementById('candidatesContainer');
+            const index = container.querySelectorAll('.candidate-row').length;
+
+            const newRow = document.createElement('div');
+            newRow.className = 'form-row candidate-row';
+            newRow.innerHTML = `
+                <div class="form-group">
+                    <label>نام کاندیدا</label>
+                    <input type="text" name="Candidates[${index}].FullName" class="form-control" placeholder="نام کامل کاندیدا" />
+                </div>
+                <div class="form-group">
+                    <label>شماره تماس</label>
+                    <input type="tel" name="Candidates[${index}].PhoneNumber" class="form-control" placeholder="09123456789" />
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="button" class="btn btn-danger remove-candidate" style="margin-top: 1.8rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(newRow);
+        });
+
+        // مدیریت رای‌دهندگان
+        document.getElementById('addVoterBtn').addEventListener('click', function() {
+            const container = document.getElementById('votersContainer');
+            const index = container.querySelectorAll('.voter-row').length;
+
+            const newRow = document.createElement('div');
+            newRow.className = 'form-row voter-row';
+            newRow.innerHTML = `
+                <div class="form-group">
+                    <label>شماره تلفن رای‌دهنده</label>
+                    <input type="tel" name="Voters[${index}].PhoneNumber" class="form-control" placeholder="09123456789" />
+                </div>
+                <div class="form-group">
+                    <label>تعداد واحدها</label>
+                    <input type="number" name="Voters[${index}].VoteAccessNumber" class="form-control" value="1" min="1" />
+                </div>
+                <div class="form-group" style="align-self: flex-end;">
+                    <button type="button" class="btn btn-danger remove-voter" style="margin-top: 1.8rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(newRow);
+        });
+
+        // حذف کاندیدا
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-candidate')) {
+                const row = e.target.closest('.candidate-row');
+                if (document.querySelectorAll('.candidate-row').length > 1) {
+                    row.remove();
+                    reindexFields('candidatesContainer', 'Candidates');
+                }
+            }
+
+            if (e.target.closest('.remove-voter')) {
+                const row = e.target.closest('.voter-row');
+                if (document.querySelectorAll('.voter-row').length > 1) {
+                    row.remove();
+                    reindexFields('votersContainer', 'Voters');
+                }
+            }
+        });
+
+        // بازنشانی اندیس‌ها پس از حذف
+        function reindexFields(containerId, prefix) {
+            const container = document.getElementById(containerId);
+            const rows = container.querySelectorAll('.form-row');
+
+            rows.forEach((row, index) => {
+                // به‌روزرسانی نام فیلدها
+                const inputs = row.querySelectorAll('input');
+                inputs.forEach(input => {
+                    const name = input.name.replace(/\[\d+\]/, `[${index}]`);
+                    input.name = name;
+                });
+            });
+        }
+
+        // مدیریت ارسال فرم
+        document.getElementById('electionForm').addEventListener('submit', function() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        });
+        
+        // منوی موبایل
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const overlay = document.getElementById('overlay');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+        });
+
+        // بستن منو هنگام کلیک خارج از آن
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && 
+                event.target !== mobileMenuBtn && 
+                !mobileMenuBtn.contains(event.target) &&
+                event.target !== overlay) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
