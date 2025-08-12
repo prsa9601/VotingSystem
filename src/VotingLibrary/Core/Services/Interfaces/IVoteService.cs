@@ -10,7 +10,9 @@ namespace VotingLibrary.Core.Services.Interfaces
         Task<OperationResult> Edit(Guid voteId, int voteNumber, Guid userId, Guid candidateId, bool isAdminVote, Guid election);
         Task<OperationResult?> AddCandidateId(Guid voteId, Guid candidateId);
         Task<OperationResult?> AddElectionId(Guid voteId, Guid electionId);
+        Task<OperationResult?> RemoveVotes(Guid candidateId, Guid userId, Guid electionId);
         bool CheckVote(Guid userId, Guid electionId);
+        //Guid CheckVote(Guid userId, Guid electionId);
         Task<Vote?> GetId(Guid voteId);
         Task<Vote?> GetByCandidateIdAndElectionId(Guid candidateId, Guid electionId);
         Task<VoteFilterResult> GetFilter(VoteFilterParam param);

@@ -156,5 +156,21 @@ namespace VotingLibrary.Core.Services.Services
             data.GeneratePaging(candidate.AsQueryable(), param.Take, param.PageId);
             return data;
         }
+
+        public async Task<OperationResult> RemoveVote(Guid candidateId, Guid userId, Guid electionId)
+        {
+            var candidate = await _repository.GetTracking(candidateId);
+            if (candidate == null)
+            {
+                return OperationResult.NotFound();
+            }
+
+            var votes = _context.Votes.Where(i => i.UserId.Equals(userId)
+            && i.ElectionId.Equals(electionId) && i.CandidateId.Equals(candidateId));
+
+            candidate.ClearVote(votes.Select(i => i.Id).ToList());
+            _context.SaveChanges();
+            return OperationResult.Success();
+        }
     }
 }

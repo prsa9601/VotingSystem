@@ -36,20 +36,12 @@
             font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /*  font -face {
-<<<<<<< HEAD
-                                                                    font-family: 'Vazir';
-                                                                    src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
-                                                                    font-weight: normal;
-                                                                    font-style: normal;
-                                                                } */
-=======
-                                                            font-family: 'Vazir';
-                                                            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
-                                                            font-weight: normal;
-                                                            font-style: normal;
-                                                        } */
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
+        @@font-face {
+            font-family: 'Vazir';
+            src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
 
         body {
             background-color: #f0f2f5;
@@ -57,6 +49,8 @@
             min-height: 100vh;
             line-height: 1.6;
             display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
         /* سایدبار */
@@ -67,9 +61,17 @@
             height: 100vh;
             position: fixed;
             padding: 1.5rem 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            right: 0;
+            top: 0;
+            transform: translateX(100%);
         }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
 
         .sidebar-header {
             padding: 0 1.5rem 1.5rem;
@@ -120,8 +122,45 @@
         /* محتوای اصلی */
         .main-content {
             flex: 1;
-            margin-right: 280px;
             padding: 2rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        /* منوی موبایل */
+        .mobile-menu-btn {
+            display: block;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar.active + .overlay {
+            display: block;
         }
 
         /* هدر */
@@ -302,9 +341,16 @@
                 color: white;
             }
 
+        /* جدول با قابلیت اسکرول افقی */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px;
         }
 
         th, td {
@@ -422,111 +468,7 @@
                 margin-left: 0.5rem;
             }
 
-<<<<<<< HEAD
-
-        @@media (max-width: 1200px) {
-            .sidebar {
-                width: 250px;
-                margin-right: -250px;
-            }
-=======
-     
-          @@media (max-width: 1200px) {
-                                                            .sidebar
-
-                                                        {
-                                                            width: 250px;
-                                                            margin-right: -250px;
-                                                        }
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
-
-                                                        .sidebar.active {
-                                                            margin-right: 0;
-                                                        }
-
-<<<<<<< HEAD
-            .main-content {
-                margin-right: 0;
-                width: 100%;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-        }
-
-        @@media (max-width: 768px) {
-            .stats-cards {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .winners-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @@media (max-width: 576px) {
-            .stats-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .user-profile {
-                margin-top: 1rem;
-            }
-        }
-=======
-                                                        .main-content {
-                                                            margin-right: 0;
-                                                            width: 100%;
-                                                        }
-
-                                                        .menu-toggle {
-                                                            display: block;
-                                                        }
-
-                                                        }
-
-                                                        @@media (max-width: 768px) {
-                                                            .stats-cards
-
-                                                        {
-                                                            grid-template-columns: 1fr 1fr;
-                                                        }
-
-                                                        .winners-grid {
-                                                            grid-template-columns: 1fr;
-                                                        }
-
-                                                        }
-
-                                                        @@media (max-width: 576px) {
-                                                            .stats-cards
-
-                                                        {
-                                                            grid-template-columns: 1fr;
-                                                        }
-
-                                                        .header {
-                                                            flex-direction: column;
-                                                            align-items: flex-start;
-                                                        }
-
-                                                        .user-profile {
-                                                            margin-top: 1rem;
-                                                        }
-
-                                                        }
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
-    </style>
-
-    <style>
-        /* استایل‌های سفارشی برای SweetAlert */
-        /* استایل‌های پجینیشن */
+        /* پجینیشن */
         .pagination-container {
             margin-top: 1.5rem;
             display: flex;
@@ -540,6 +482,8 @@
             padding: 0;
             margin: 0;
             gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .pagination-link {
@@ -569,6 +513,108 @@
             font-size: 0.9rem;
         }
 
+        /* استایل‌های ریسپانسیو */
+        @@media (min-width: 768px) {
+            body {
+                flex-direction: row;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+                width: 280px;
+                height: 100vh;
+            }
+
+            .main-content {
+                margin-right: 280px;
+                padding: 2rem;
+                width: calc(100% - 280px);
+            }
+
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .overlay {
+                display: none !important;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .stats-cards {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .stats-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .winners-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-wrap: wrap;
+            }
+
+                .header h1 {
+                    margin-bottom: 1rem;
+                    font-size: 1.5rem;
+                }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.8rem;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .user-profile {
+                margin-top: 1rem;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .table-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .sidebar {
+                width: 85%;
+            }
+
+            .header h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+
+    <style>
+        /* استایل‌های سفارشی برای SweetAlert */
         .sweet-title {
             font-family: 'Vazir', sans-serif;
             font-size: 1.5rem;
@@ -609,32 +655,31 @@
     </style>
 </head>
 <body>
+    <!-- دکمه منوی موبایل -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
 
     <!-- سایدبار -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2><i class="fas fa-user-shield"></i> پنل مدیریت</h2>
         </div>
         <div class="sidebar-menu">
-
             <div class="menu-item">
                 <a href="/Admin/Election/Index"><i class="fas fa-vote-yea"></i> انتخابات‌ها</a>
             </div>
             <div class="menu-item">
-                <a href="/Index"><i class="fas fa-home"></i> ‌صفحه اصلی</a>
+                <a href="/Index"><i class="fas fa-home"></i> صفحه اصلی</a>
             </div>
             <div class="menu-item">
                 <a href="/Logout"><i class="fas fa-sign-out-alt"></i> خروج از حساب</a>
             </div>
-
-         @*    <div class="menu-item">
-                <a href="/Admin/User/List"><i class="fas fa-vote-yea"></i> کاربران</a>
-            </div> *@
-
-
-
         </div>
     </div>
+
+    <!-- Overlay برای بستن منو -->
+    <div class="overlay" id="overlay"></div>
 
     <!-- محتوای اصلی -->
     <div class="main-content">
@@ -642,83 +687,73 @@
             <h1><i class="fas fa-tachometer-alt"></i> پیشخوان مدیریت</h1>
             <div class="user-profile">
                 <div class="user-info">
-                    <div class="user-name">مدیر سایت</div>
+                    @* <div class="user-name">مدیر سایت</div> *@
                 </div>
             </div>
         </div>
-
 
         <!-- جدول انتخابات -->
         <div class="elections-table">
             <div class="table-header">
                 <h2><i class="fas fa-vote-yea"></i> لیست انتخابات‌ها</h2>
                 <div class="table-actions">
-                    <button onclick="location.href='/Admin/Election/Add'" class="btn btn-primary"><i href="/Add" class="fas fa-plus"></i> انتخابات جدید</button>
+                    <button onclick="location.href='/Admin/Election/Add'" class="btn btn-primary"><i class="fas fa-plus"></i> انتخابات جدید</button>
                 </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>عنوان انتخابات</th>
-                        <th>تاریخ شروع</th>
-                        <th>تاریخ پایان</th>
-                        <th>تعداد کاندیداها</th>
-                        <th>آراء ثبت شده</th>
-                        <th>وضعیت</th>
-                        <th>عملیات</th>
-                    </tr>
-                </thead>
-                <tbody>
 
-                    @if (Model.FilterResult.Data.Count == 0)
-                    {
+            <div class="table-responsive">
+                <table>
+                    <thead>
                         <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                <p>انتخاباتی یافت نشد.</p>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <th>عنوان انتخابات</th>
+                            <th>تاریخ شروع</th>
+                            <th>تاریخ پایان</th>
+                            <th>تعداد کاندیداها</th>
+                            <th>آراء ثبت شده</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
                         </tr>
-                    }
+                    </thead>
+                    <tbody>
+                        @if (Model.FilterResult.Data.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="7" style="text-align: center;">
+                                    <p>انتخاباتی یافت نشد.</p>
+                                </td>
+                            </tr>
+                        }
 
-                    @foreach (var item in Model.FilterResult.Data)
-                    {
-                        <tr>
-                            <td>@item.Title</td>
-                            <td>@DateConverter.ConvertToPersianDate(item.StartTime)</td>
-                            <td>@DateConverter.ConvertToPersianDate(item.EndTime)</td>
-                            <td>@item.CandidateId.Count()</td>
-                            <td>@item.VotesId.Count</td>
-                            <td><span class="status upcoming">@(item.IsActive == true ? "فعال" : "غیرفعال")</span></td>
-                            <td>
-                                <button onclick="location.href='/Admin/Election/Detail/@item.Id'" class="action-btn" title="مشاهده"><i href="Detail" class="fas fa-eye"></i></button>
-                                <button onclick="deleteElection('@item.Id')" class="action-btn delete-btn" title="حذف">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-
-
-                            </td>
-                        </tr>
-                    }
-
-                </tbody>
-            </table>
-
-
+                        @foreach (var item in Model.FilterResult.Data)
+                        {
+                            <tr>
+                                <td>@item.Title</td>
+                                <td>@DateConverter.ConvertToPersianDate(item.StartTime)</td>
+                                <td>@DateConverter.ConvertToPersianDate(item.EndTime)</td>
+                                <td>@item.CandidateId.Count()</td>
+                                <td>@item.VotesId.Count</td>
+                                <td><span class="status upcoming">@(item.IsActive == true ? "فعال" : "غیرفعال")</span></td>
+                                <td>
+                                    <button onclick="location.href='/Admin/Election/Detail/@item.Id'" class="action-btn" title="مشاهده"><i class="fas fa-eye"></i></button>
+                                    <button onclick="deleteElection('@item.Id')" class="action-btn delete-btn" title="حذف">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <!-- در بخش مربوط به جدول رای‌دهندگان (پایین جدول) -->
-        <div class="pagination-container" style="margin-top: 1.5rem; display: flex; justify-content: center; align-items: center;">
-            <ul class="pagination" style="display: flex; list-style: none; padding: 0; margin: 0; gap: 0.5rem;">
+
+        <!-- پجینیشن -->
+        <div class="pagination-container">
+            <ul class="pagination">
                 @if (Model.FilterResult.CurrentPage > 1)
                 {
                     <li>
                         <a href="?PageId=@(Model.FilterResult.CurrentPage - 1)&Take=@Model.FilterResult.Take"
-                           class="pagination-link"
-                           style="display: inline-block; padding: 0.5rem 1rem; background-color: #f5f5f5; border-radius: 5px; text-decoration: none; color: #333; transition: all 0.3s;">
+                           class="pagination-link">
                             قبلی
                         </a>
                     </li>
@@ -728,8 +763,7 @@
                 {
                     <li>
                         <a href="?PageId=@p&Take=@Model.FilterResult.Take"
-                           class="pagination-link @(p == Model.FilterResult.CurrentPage ? "active" : "")"
-                           style="display: inline-block; padding: 0.5rem 1rem; background-color: @(p == Model.FilterResult.CurrentPage ? "#5e35b1" : "#f5f5f5"); color: @(p == Model.FilterResult.CurrentPage ? "white" : "#333"); border-radius: 5px; text-decoration: none; transition: all 0.3s;">
+                           class="pagination-link @(p == Model.FilterResult.CurrentPage ? "active" : "")">
                             @p
                         </a>
                     </li>
@@ -739,8 +773,7 @@
                 {
                     <li>
                         <a href="?PageId=@(Model.FilterResult.CurrentPage + 1)&Take=@Model.FilterResult.Take"
-                           class="pagination-link"
-                           style="display: inline-block; padding: 0.5rem 1rem; background-color: #f5f5f5; border-radius: 5px; text-decoration: none; color: #333; transition: all 0.3s;">
+                           class="pagination-link">
                             بعدی
                         </a>
                     </li>
@@ -752,8 +785,46 @@
     @Html.AntiForgeryToken()
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // مدیریت منوی موبایل
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const overlay = document.getElementById('overlay');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+        });
+
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+            overlay.style.display = 'none';
+        });
+
+        // بستن منو هنگام کلیک خارج از آن
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) &&
+                event.target !== mobileMenuBtn &&
+                !mobileMenuBtn.contains(event.target) &&
+                event.target !== overlay) {
+                sidebar.classList.remove('active');
+                overlay.style.display = 'none';
+            }
+        });
+
+        // حذف انتخابات
         async function deleteElection(electionId) {
-            if (!confirm("آیا مطمئن هستید که می‌خواهید حذف کنید؟")) return;
+            const result = await Swal.fire({
+                title: 'آیا مطمئن هستید؟',
+                text: "این عمل قابل بازگشت نیست!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'بله، حذف کن!',
+                cancelButtonText: 'لغو'
+            });
+
+            if (!result.isConfirmed) return;
 
             try {
                 const response = await fetch(`/Admin/Election/Index?handler=Delete&electionId=${electionId}`, {
@@ -765,19 +836,17 @@
                 });
 
                 if (response.ok) {
-                    // موفقیت‌آمیز بود، می‌تونی صفحه رو رفرش کنی یا آیتم رو حذف کنی از DOM
-                    location.reload(); // یا removeElementFromDOM(electionId)
+                    location.reload();
                 } else {
-                    alert("خطا در حذف آیتم");
+                    Swal.fire('خطا!', 'مشکلی در حذف انتخابات پیش آمد', 'error');
                 }
             } catch (error) {
                 console.error("خطا:", error);
-                alert("مشکلی در ارتباط با سرور پیش آمد");
+                Swal.fire('خطا!', 'مشکلی در ارتباط با سرور پیش آمد', 'error');
             }
         }
-    </script>
 
-    <script>
+        // نمایش نوتیفیکیشن‌ها
         document.addEventListener('DOMContentLoaded', function() {
             const alertType = '@(TempData["AlertType"] ?? "")';
             const alertMessage = '@Html.Raw(TempData["AlertMessage"] ?? "")';
@@ -789,9 +858,6 @@
             function showAnimatedAlert(type, message) {
                 const icon = type === 'success' ? 'success' : 'error';
                 const title = type === 'success' ? 'موفقیت!' : 'خطا!';
-                const background = type === 'success' ?
-                    'linear-gradient(135deg, #4CAF50, #66BB6A)' :
-                    'linear-gradient(135deg, #F44336, #EF5350)';
 
                 Swal.fire({
                     title: `<strong>${title}</strong>`,
@@ -803,69 +869,19 @@
                     color: '#2d3748',
                     confirmButtonColor: type === 'success' ? '#4CAF50' : '#F44336',
                     iconColor: type === 'success' ? '#4CAF50' : '#F44336',
-                    showClass: {
-                        popup: 'animate__animated animate__fadeInDown'
-                    },
-                    hideClass: {
-                        popup: 'animate__animated animate__fadeOutUp'
-                    },
                     customClass: {
                         title: 'sweet-title',
                         content: 'sweet-content',
                         confirmButton: 'sweet-confirm',
                         closeButton: 'sweet-close'
                     },
-                    buttonsStyling: false,
                     didOpen: () => {
                         const popup = Swal.getPopup();
                         popup.style.borderRadius = '12px';
                         popup.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
-
-                        // افکت پس‌زمینه
-                        const backdrop = document.querySelector('.swal2-backdrop');
-                        backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
                     }
                 });
             }
-        });
-    </script>
-    @*   <script>
-        // نمایش نوتیفیکیشن بر اساس TempData
-        document.addEventListener('DOMContentLoaded', function() {
-            // بررسی وجود پیام موفقیت
-            const successMessage = '@(TempData["SuccessMessage"] ?? "")';
-            const errorMessage = '@(TempData["ErrorMessage"] ?? "")';
-
-            if (successMessage) {
-                showNotification(successMessage, 'success');
-            }
-
-            if (errorMessage) {
-                showNotification(errorMessage, 'error');
-            }
-
-            function showNotification(message, type) {
-                const notification = document.createElement('div');
-                notification.className = `notification ${type}`;
-                notification.innerHTML = `
-                    <span>${message}</span>
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                `;
-
-                document.body.appendChild(notification);
-
-                // حذف خودکار پس از 3 ثانیه
-                setTimeout(() => {
-                    notification.remove();
-                }, 3000);
-            }
-        });
-    </script> *@
-    <script>
-        // در اینجا می‌توانید اسکریپت‌های مدیریتی را اضافه کنید
-        document.addEventListener('DOMContentLoaded', function() {
-            // اینجا می‌توانید عملیات مدیریتی مانند بارگذاری داده‌ها از API را انجام دهید
-            console.log('پنل مدیریت آماده است');
         });
     </script>
 </body>

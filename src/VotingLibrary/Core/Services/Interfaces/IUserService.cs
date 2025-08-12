@@ -10,6 +10,7 @@ namespace VotingLibrary.Core.Services.Interfaces
         Task<OperationResult> Register(string fullName, string phoneNumber);
         Task<OperationResult<Guid>> Create(string phoneNumber, int voteAccessNumber);
         Task<OperationResult> SetVote(Guid userId, Guid voteId);
+        Task<OperationResult> RemoveVote(Guid userId, Guid candidateId, Guid electionId);
         Task<OperationResult> SetFullName(Guid userId, string fullName);
         Task<OperationResult> ChangeAccessVoteVisibility(Guid userId);
         Task<OperationResult> SetRole(Guid userId, Role role);

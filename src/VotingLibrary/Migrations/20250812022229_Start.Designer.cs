@@ -12,8 +12,8 @@ using VotingLibrary.Data.Persistent.Ef;
 namespace VotingLibrary.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250810235301_Start44")]
-    partial class Start44
+    [Migration("20250812022229_Start")]
+    partial class Start
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

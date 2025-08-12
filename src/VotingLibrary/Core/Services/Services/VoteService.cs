@@ -80,7 +80,7 @@ namespace VotingLibrary.Core.Services.Services
             var result = _context.Votes.AsQueryable();
             if (param.electionId != null && param.candidateId != null)
             {
-                result = _context.Votes.Where(i => i.ElectionId.Equals(param.electionId) 
+                result = _context.Votes.Where(i => i.ElectionId.Equals(param.electionId)
                 && i.CandidateId.Equals(param.candidateId));
 
             }
@@ -104,6 +104,16 @@ namespace VotingLibrary.Core.Services.Services
             if (vote == null)
                 return null;
             return vote;
+        }
+
+        public async Task<OperationResult?> RemoveVotes(Guid candidateId, Guid userId, Guid electionId)
+        {
+            var votes = _context.Votes.Where(i => i.UserId.Equals(userId)
+             && i.ElectionId.Equals(electionId) && i.CandidateId.Equals(candidateId));
+
+            _context.Votes.RemoveRange(votes);
+            _context.SaveChanges();
+            return OperationResult.Success();
         }
     }
 }

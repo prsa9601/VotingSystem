@@ -38,7 +38,7 @@ namespace VotingLibrary.Core.Services.Comands
             //        var userExist = await _repository.GetByFilterAsync(i => i.PhoneNumber.Equals(phoneNumber));
             //        return OperationResult<Guid>.Success(userExist!.Id);
             //    }
-         
+
             var user = new User(phoneNumber, voteAccessNumber);
             await _repository.AddAsync(user);
             await _repository.Save();
@@ -108,8 +108,11 @@ namespace VotingLibrary.Core.Services.Comands
             User result = new User();
             foreach (var item in election.UsersId)
             {
-                result = user.FirstOrDefault(i=>i.Id.Equals(item));
-                break;
+                result = user.FirstOrDefault(i => i.Id.Equals(item));
+                if (result != null)
+                {
+                    break;
+                }
             }
             if (user == null)
             {
@@ -209,6 +212,22 @@ namespace VotingLibrary.Core.Services.Comands
             };
             data.GeneratePaging(res.AsQueryable(), param.Take, param.PageId);
             return data;
+        }
+
+        public async Task<OperationResult> RemoveVote(Guid userId, Guid candidateId, Guid electionId)
+        {
+            var user = await _repository.GetTracking(userId);
+            if (user == null)
+            {
+                return OperationResult.NotFound();
+            }
+
+            var votes = _context.Votes.Where(i => i.UserId.Equals(userId)
+            && i.ElectionId.Equals(electionId) && i.CandidateId.Equals(candidateId));
+
+            user.ClearVote(votes.Select(i => i.Id).ToList());
+            _context.SaveChanges();
+            return OperationResult.Success();
         }
     }
 }

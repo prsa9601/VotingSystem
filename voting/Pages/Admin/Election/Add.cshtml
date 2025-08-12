@@ -51,6 +51,7 @@
             line-height: 1.6;
             display: flex;
             overflow-x: hidden;
+            flex-direction: column;
         }
 
         /* سایدبار */
@@ -66,7 +67,12 @@
             z-index: 1000;
             right: 0;
             top: 0;
+            transform: translateX(100%);
         }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
 
         .sidebar-header {
             padding: 0 1.5rem 1.5rem;
@@ -117,9 +123,45 @@
         /* محتوای اصلی */
         .main-content {
             flex: 1;
-            margin-right: 280px;
             padding: 2rem;
             transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        /* منوی موبایل */
+        .mobile-menu-btn {
+            display: block;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar.active + .overlay {
+            display: block;
         }
 
         /* هدر */
@@ -143,31 +185,6 @@
                     margin-left: 0.5rem;
                     color: var(--primary);
                 }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-        }
-
-            .user-profile img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                margin-left: 0.5rem;
-            }
-
-        .user-info {
-            text-align: right;
-        }
-
-        .user-name {
-            font-weight: 600;
-        }
-
-        .user-role {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
 
         /* استایل‌های جدید */
         .form-container {
@@ -213,19 +230,6 @@
             .form-row .form-group {
                 flex: 1;
                 margin-bottom: 0;
-            }
-
-        .voter-units {
-            display: flex;
-            align-items: center;
-            background-color: #f8f9fa;
-            padding: 0.8rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-        }
-
-            .voter-units label {
-                margin-left: 0.5rem;
             }
 
         .candidate-selection {
@@ -301,18 +305,14 @@
         }
 
         .total-votes-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
             background-color: var(--primary);
             color: white;
             padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 100;
+            border-radius: 5px;
+            margin-top: 2rem;
         }
 
         .vote-submit-btn {
@@ -450,67 +450,34 @@
             color: var(--danger);
         }
 
-        /* Overlay برای زمانی که منو باز است */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
+        /* استایل‌های ریسپانسیو */
+        @@media (min-width: 768px) {
+            body {
+                flex-direction: row;
+            }
 
-        .sidebar.active + .overlay {
-            display: block;
-        }
+            .sidebar {
+                transform: translateX(0);
+                width: 280px;
+                height: 100vh;
+            }
 
-        /* منوی همبرگری برای موبایل */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-            cursor: pointer;
-            margin-left: 1rem;
-            z-index: 1100;
-        }
+            .main-content {
+                margin-right: 280px;
+                padding: 2rem;
+                width: calc(100% - 280px);
+            }
 
-        /* ریسپانسیو */
-        @@media (max-width: 1200px) {
-            .candidate-selection {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .overlay {
+                display: none !important;
             }
         }
 
         @@media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(100%);
-                width: 300px;
-            }
-<<<<<<< HEAD
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-=======
-
-                .sidebar.active {
-                    transform: translateX(0);
-                }
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
-
-            .main-content {
-                margin-right: 0;
-                width: 100%;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
             .form-container {
                 padding: 1.5rem;
             }
@@ -533,29 +500,19 @@
             .header {
                 flex-wrap: wrap;
             }
-<<<<<<< HEAD
-            
-            .header h1 {
-                font-size: 1.5rem;
-                margin-bottom: 1rem;
-            }
-=======
 
                 .header h1 {
                     margin-bottom: 1rem;
+                    font-size: 1.5rem;
                 }
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
 
             .main-content {
                 padding: 1.5rem;
             }
-<<<<<<< HEAD
-            
+
             .btn {
                 padding: 0.8rem;
             }
-=======
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
         }
 
         @@media (max-width: 576px) {
@@ -587,46 +544,57 @@
             .sidebar {
                 width: 85%;
             }
-<<<<<<< HEAD
-            
+
             .form-row .form-group {
                 margin-bottom: 1rem;
             }
-            
+
             .date-input-container .form-control {
                 padding-left: 2.5rem;
             }
-            
+
             .date-input-icon {
                 left: 15px;
             }
-            
+
             .header h1 {
                 font-size: 1.3rem;
             }
-=======
->>>>>>> a6ee6f35b229e2074a5444419e86cce3f9387ae8
         }
+
+        /* اسکرول افقی برای جداول */
+        .table-responsive {
+            overflow-x: auto;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+            .table-responsive table {
+                min-width: 600px;
+            }
     </style>
 </head>
 <body>
+    <!-- دکمه منوی موبایل -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- سایدبار -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2><i class="fas fa-user-shield"></i> پنل مدیریت</h2>
         </div>
         <div class="sidebar-menu">
-
             <div class="menu-item">
                 <a href="/Admin/Election/Index"><i class="fas fa-vote-yea"></i> انتخابات‌ها</a>
             </div>
             <div class="menu-item">
-                <a href="/Index"><i class="fas fa-home"></i> ‌صفحه اصلی</a>
+                <a href="/Index"><i class="fas fa-home"></i> صفحه اصلی</a>
             </div>
             <div class="menu-item">
                 <a href="/Logout"><i class="fas fa-sign-out-alt"></i> خروج از حساب</a>
             </div>
-
         </div>
     </div>
 
@@ -641,12 +609,7 @@
     <!-- محتوای اصلی -->
     <div class="main-content">
         <div class="header">
-            <div style="display: flex; align-items: center;">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1><i class="fas fa-plus-circle"></i> ایجاد انتخابات جدید</h1>
-            </div>
+            <h1><i class="fas fa-plus-circle"></i> ایجاد انتخابات جدید</h1>
         </div>
 
         <!-- پیام‌های سیستم -->
@@ -905,7 +868,7 @@
         document.getElementById('electionForm').addEventListener('submit', function() {
             document.getElementById('loadingOverlay').style.display = 'flex';
         });
-        
+
         // منوی موبایل
         const sidebar = document.getElementById('sidebar');
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -913,19 +876,22 @@
 
         mobileMenuBtn.addEventListener('click', function() {
             sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
         });
 
         overlay.addEventListener('click', function() {
             sidebar.classList.remove('active');
+            overlay.style.display = 'none';
         });
 
         // بستن منو هنگام کلیک خارج از آن
         document.addEventListener('click', function(event) {
-            if (!sidebar.contains(event.target) && 
-                event.target !== mobileMenuBtn && 
+            if (!sidebar.contains(event.target) &&
+                event.target !== mobileMenuBtn &&
                 !mobileMenuBtn.contains(event.target) &&
                 event.target !== overlay) {
                 sidebar.classList.remove('active');
+                overlay.style.display = 'none';
             }
         });
     </script>

@@ -64,7 +64,7 @@ namespace voting.Pages.Admin.Candidate
                 candidateId = candidateId,
                 electionId = electionId,
                 PageId = PageId,
-                Take = Take
+                Take = 100000
 
             });
             FilterResult = await _userService.GetFilterForCandidateAdmin(new UserFilterForCandidateParam

@@ -183,9 +183,9 @@ namespace VotingLibrary.Core.Services.Services
             _context.Elections.Remove(election);
             foreach (var item in candidates)
             {
-                item.ClearElection(electionId);    
+                item.ClearElection(electionId);
             }
-            
+
             _context.Votes.RemoveRange(votes);
 
             _context.SaveChanges();
@@ -201,6 +201,44 @@ namespace VotingLibrary.Core.Services.Services
             }
             election.AddUsers(userId);
             await _repository.Save();
+            return OperationResult.Success();
+        }
+
+        public async Task<OperationResult> RemoveVote(Guid electionId, Guid candidateId, Guid userId)
+        {
+            var election = await _repository.GetTracking(electionId);
+            if (election == null)
+            {
+                return OperationResult.NotFound();
+            }
+
+            var votes = _context.Votes.Where(i => i.UserId.Equals(userId)
+            && i.ElectionId.Equals(electionId) && i.CandidateId.Equals(candidateId));
+
+            election.ClearVotes(votes.Select(i => i.Id).ToList());
+            _context.SaveChanges();
+            return OperationResult.Success();
+        }
+
+        public async Task<OperationResult> RemoveUser(Guid electionId, Guid candidateId, Guid userId)
+        {
+            var election = await _repository.GetTracking(electionId);
+            if (election == null)
+            {
+                return OperationResult.NotFound();
+            }
+
+            var votes = _context.Votes.Where(i => i.UserId.Equals(userId)
+            && i.ElectionId.Equals(electionId) && i.CandidateId.Equals(candidateId));
+
+            var users = new List<User>();
+            foreach (var item in votes)
+            {
+                users.AddRange(_context.Users.Where(i => i.VotesId.Any(x => x.Equals(item))));
+
+            }
+            election.ClearUsers(users.Select(i=>i.Id).ToList());
+            _context.SaveChanges();
             return OperationResult.Success();
         }
     }

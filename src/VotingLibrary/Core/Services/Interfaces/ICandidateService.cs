@@ -10,6 +10,7 @@ namespace VotingLibrary.Core.Services.Interfaces
         Task<OperationResult> Edit(Guid candidateId, string fullName, string phoneNumber);
         Task<OperationResult> EditPhoneNumber(Guid candidateId, string phoneNumber);
         Task<OperationResult> AddVote(Guid candidateId , Guid voteId);
+        Task<OperationResult> RemoveVote(Guid candidateId , Guid userId, Guid electionId);
         Task<OperationResult> AddElection(Guid candidateId, Guid electionId);
         Task<OperationResult> ChangeIsWinVisibility(Guid candidateId);
         Task<Candidate?> GetId(Guid candidateId);

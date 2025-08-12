@@ -37,7 +37,6 @@
             font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-<<<<<<< HEAD
         @@font-face {
             font-family: 'Vazir';
             src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/Vazir.woff2') format('woff2');
@@ -52,6 +51,7 @@
             line-height: 1.6;
             display: flex;
             overflow-x: hidden;
+            flex-direction: column;
         }
 
         /* سایدبار */
@@ -67,7 +67,12 @@
             z-index: 1000;
             right: 0;
             top: 0;
+            transform: translateX(100%);
         }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
 
         .sidebar-header {
             padding: 0 1.5rem 1.5rem;
@@ -118,9 +123,45 @@
         /* محتوای اصلی */
         .main-content {
             flex: 1;
-            margin-right: 280px;
             padding: 2rem;
             transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        /* منوی موبایل */
+        .mobile-menu-btn {
+            display: block;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar.active + .overlay {
+            display: block;
         }
 
         /* هدر */
@@ -164,7 +205,6 @@
         }
 
         /* استایل‌های انتخابات */
-
         .election-header {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -379,58 +419,36 @@
                 color: #388e3c;
             }
 
-        /* Overlay برای زمانی که منو باز است */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
+        /* استایل‌های ریسپانسیو */
+        @@media (min-width: 768px) {
+            body {
+                flex-direction: row;
+            }
 
-        .sidebar.active + .overlay {
-            display: block;
-        }
+            .sidebar {
+                transform: translateX(0);
+                width: 280px;
+                height: 100vh;
+            }
 
-        /* منوی همبرگری برای موبایل */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--primary-dark);
-            font-size: 1.5rem;
-            cursor: pointer;
-            margin-left: 1rem;
-            z-index: 1100;
-        }
+            .main-content {
+                margin-right: 280px;
+                padding: 2rem;
+                width: calc(100% - 280px);
+            }
 
-        /* ریسپانسیو */
-        @@media (max-width: 1200px) {
-            .candidates-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            .mobile-menu-btn {
+                display: none;
+            }
+
+            .overlay {
+                display: none !important;
             }
         }
 
         @@media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(100%);
-                width: 300px;
-            }
-            
-            .sidebar.active {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-right: 0;
-                width: 100%;
-            }
-
-            .mobile-menu-btn {
-                display: block;
+            .candidates-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             }
         }
 
@@ -443,10 +461,7 @@
             .header {
                 flex-wrap: wrap;
             }
-            .header h1 {
-                margin-bottom: 1rem;
-            }
-            
+
             .candidates-grid {
                 grid-template-columns: 1fr;
             }
@@ -454,11 +469,11 @@
             .main-content {
                 padding: 1rem;
             }
-            
+
             .election-header {
                 padding: 1.5rem;
             }
-            
+
             .election-title {
                 font-size: 1.5rem;
             }
@@ -496,18 +511,18 @@
             .sidebar {
                 width: 85%;
             }
-            
+
             .stat-card {
                 flex-direction: column;
                 text-align: center;
                 padding: 1rem;
             }
-            
+
             .stat-icon {
                 margin-left: 0;
                 margin-bottom: 1rem;
             }
-            
+
             .election-title {
                 font-size: 1.3rem;
             }
@@ -515,6 +530,11 @@
     </style>
 </head>
 <body>
+    <!-- دکمه منوی موبایل -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- سایدبار -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -525,13 +545,11 @@
                 <a href="/Admin/Election/Index"><i class="fas fa-vote-yea"></i> انتخابات‌ها</a>
             </div>
             <div class="menu-item">
-                <a href="/Index"><i class="fas fa-home"></i> ‌صفحه اصلی</a>
+                <a href="/Index"><i class="fas fa-home"></i> صفحه اصلی</a>
             </div>
             <div class="menu-item">
                 <a href="/Logout"><i class="fas fa-sign-out-alt"></i> خروج از حساب</a>
             </div>
-
-
         </div>
     </div>
 
@@ -541,15 +559,10 @@
     <!-- محتوای اصلی -->
     <div class="main-content">
         <div class="header">
-            <div style="display: flex; align-items: center;">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <h1><i class="fas fa-info-circle"></i> جزئیات انتخابات</h1>
-            </div>
+            <h1><i class="fas fa-info-circle"></i> جزئیات انتخابات</h1>
             <div class="user-profile">
                 <div class="user-info">
-                    <div class="user-name">مدیر سایت</div>
+                    @* <div class="user-name">مدیر سایت</div> *@
                 </div>
             </div>
         </div>
@@ -559,22 +572,16 @@
             <h1 class="election-title">
                 <i class="fas fa-vote-yea"></i> @Model.Election.Title
             </h1>
-            
+
             <div class="election-meta">
                 <div class="meta-item">
-                    <i class="fas fa-calendar-alt"></i> شروع: 
+                    <i class="fas fa-calendar-alt"></i> شروع:
                     @DateConverter.ConvertToPersianDate(Model.Election.StartTime)
                 </div>
                 <div class="meta-item">
-                    <i class="fas fa-calendar-times"></i> پایان: 
+                    <i class="fas fa-calendar-times"></i> پایان:
                     @DateConverter.ConvertToPersianDate(Model.Election.EndTime)
                 </div>
-                @* <div class="meta-item">
-                    <i class="fas fa-user-clock"></i> وضعیت: 
-                    <span class="status @(Model.Election.IsActive ? "active" : "completed")">
-                        @(Model.Election.IsActive ? "فعال" : "پایان یافته")
-                    </span>
-                </div> *@
             </div>
         </div>
 
@@ -606,7 +613,7 @@
             <h2 class="section-title">
                 <i class="fas fa-users"></i> کاندیداهای انتخابات
             </h2>
-            
+
             @if (Model.Result?.Data?.Count > 0)
             {
                 <div class="candidates-grid">
@@ -644,29 +651,31 @@
     </div>
 
     <script>
-        // منوی موبایل
+        // مدیریت منوی موبایل
         const sidebar = document.getElementById('sidebar');
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const overlay = document.getElementById('overlay');
 
         mobileMenuBtn.addEventListener('click', function() {
             sidebar.classList.toggle('active');
+            overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
         });
 
         overlay.addEventListener('click', function() {
             sidebar.classList.remove('active');
+            overlay.style.display = 'none';
         });
 
         // بستن منو هنگام کلیک خارج از آن
         document.addEventListener('click', function(event) {
-            if (!sidebar.contains(event.target) && 
-                event.target !== mobileMenuBtn && 
+            if (!sidebar.contains(event.target) &&
+                event.target !== mobileMenuBtn &&
                 !mobileMenuBtn.contains(event.target) &&
                 event.target !== overlay) {
                 sidebar.classList.remove('active');
+                overlay.style.display = 'none';
             }
         });
     </script>
 </body>
 </html>
-

@@ -644,9 +644,13 @@
 
                         // Reset form and vote counts
                         form.reset();
+                        location.href="/Index";
                         Object.keys(voteData).forEach(id => voteData[id] = 0);
                         document.querySelectorAll('.vote-count').forEach(el => el.textContent = '0');
                         updateTotalVotes();
+                              setTimeout(() => {
+            location.href = "/Index";
+        }, 2000);
                     } else {
                         // Error message with SweetAlert
                         await Swal.fire({

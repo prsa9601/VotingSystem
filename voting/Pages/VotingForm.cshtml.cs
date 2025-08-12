@@ -83,12 +83,35 @@ namespace voting.Pages
             var isExist = _voteService.CheckVote(user.Id, electionId);
             if (isExist == true)
             {
+                await _service.SetFullName(user.Id, fullName);
+                foreach (var item in candidates)
+                {
+                    await _candidateService.RemoveVote(item, user.Id, electionId);
+                    await _electionService.RemoveVote(electionId, item, user.Id);
+                    await _service.RemoveVote(user.Id, item, electionId);
+                    await _voteService.RemoveVotes(item, user.Id, electionId);
+                   
+                }
+                foreach (var item in candidates)
+                {
+                    var voteResult = await _voteService.Create(user.VoteAccessNumber, user.Id, item, false, electionId);
+                    await _candidateService.AddVote(item, voteResult.Data);
+                    await _electionService.AddVote(electionId, voteResult.Data);
+                    //await _electionService.AddUser(electionId, user.Id);
+                    await _service.SetVote(user.Id, voteResult.Data);
+                }
+
                 return new JsonResult(new
                 {
-                    message = "عملیات غیر مجاز",
-                    success = false,
-                    description = "شما یکبار رای داده اید",
+                    success = true,
+                    message = "رای شما با موفقیت ویرایش شد."
                 });
+                //return new JsonResult(new
+                //{
+                //    message = "عملیات غیر مجاز",
+                //    success = false,
+                //    description = "شما یکبار رای داده اید",
+                //});
             }
             await _service.SetFullName(user.Id, fullName);
             foreach (var item in candidates)
