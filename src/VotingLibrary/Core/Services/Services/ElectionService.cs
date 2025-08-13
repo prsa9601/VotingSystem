@@ -16,11 +16,13 @@ namespace VotingLibrary.Core.Services.Services
     {
         private readonly IElectionRepository _repository;
         private readonly Context _context;
+        private readonly IBackgroundJobClient _backgroundJob;
 
-        public ElectionService(IElectionRepository repository, Context context)
+        public ElectionService(IElectionRepository repository, Context context, IBackgroundJobClient backgroundJob)
         {
             _repository = repository;
             _context = context;
+            _backgroundJob = backgroundJob;
         }
 
         public async Task<OperationResult> AddCandidate(Guid electionId, Guid candidateId)
@@ -69,7 +71,7 @@ namespace VotingLibrary.Core.Services.Services
             await _repository.AddAsync(election);
             if (startTime > DateTime.Now)
             {
-                election.StarTimeHangfireId = BackgroundJob.Schedule(() => ActivateElection(election.Id), election.StartTime);
+                election.StarTimeHangfireId = _backgroundJob.Schedule(() => ActivateElection(election.Id), election.StartTime)??"";
                 election.IsActive = false;
             }
             else
@@ -78,7 +80,7 @@ namespace VotingLibrary.Core.Services.Services
             }
             if (endTime > DateTime.Now)
             {
-                election.EndTimeHangfireId = BackgroundJob.Schedule(() => DeactivateElection(election.Id), election.EndTime);
+                election.EndTimeHangfireId = _backgroundJob.Schedule(() => DeactivateElection(election.Id), election.EndTime)??"";
             }
             else
             {

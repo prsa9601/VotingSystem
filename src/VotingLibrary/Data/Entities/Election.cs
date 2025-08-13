@@ -4,8 +4,8 @@
     {
         //public Guid Id { get; private set; }
         public string Title { get; set; }
-        public DateTime EndTime { get; private set; }
-        public DateTime StartTime { get; private set; }
+        public DateTime EndTime { get; set; }
+        public DateTime StartTime { get; set; }
         public bool IsActive { get; set; } = true;
         public List<Guid> CandidateId { get; set; }
         public List<Guid> UsersId { get; set; }
