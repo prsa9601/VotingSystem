@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.RateLimiting;
 using voting.Util;
 using VotingLibrary.Core.Services.Interfaces;
 using VotingLibrary.Data.Entities;
@@ -31,6 +32,7 @@ namespace voting.Pages
             Candidates = await _candidateService.GetList(electionId);
             return Page();
         }
+        //[EnableRateLimiting("User")]
         public async Task<IActionResult> OnPost(string phoneNumber, string fullName, Guid electionId, List<Guid> candidates)
         {
             var election = await _electionService.GetId(electionId);
@@ -51,7 +53,7 @@ namespace voting.Pages
                 });
             }
             var user = await _service.GetPhoneNumber
-                (phoneNumber.StartsWith("0") ? phoneNumber : $"0{phoneNumber}", electionId);
+                (phoneNumber.StartsWith("0") ? phoneNumber : $"0{phoneNumber}", electionId, fullName);
 
             if (user == null)
             {
@@ -83,35 +85,43 @@ namespace voting.Pages
             var isExist = _voteService.CheckVote(user.Id, electionId);
             if (isExist == true)
             {
-                await _service.SetFullName(user.Id, fullName);
-                foreach (var item in candidates)
+                if (User.IsInRole("Admin"))
                 {
-                    await _candidateService.RemoveVote(item, user.Id, electionId);
-                    await _electionService.RemoveVote(electionId, item, user.Id);
-                    await _service.RemoveVote(user.Id, item, electionId);
-                    await _voteService.RemoveVotes(item, user.Id, electionId);
-                   
+                    await _service.SetFullName(user.Id, fullName);
+                    var allCandidate = await _electionService.GetId(electionId);
+                    foreach (var item in allCandidate.CandidateId)
+                    {
+                        await _candidateService.RemoveVote(item, user.Id, electionId);
+                        await _electionService.RemoveVote(electionId, item, user.Id);
+                        await _service.RemoveVote(user.Id, item, electionId);
+                        await _voteService.RemoveVotes(item, user.Id, electionId);
+
+                    }
+                    foreach (var item in candidates)
+                    {
+                        var voteResult = await _voteService.Create(user.VoteAccessNumber, user.Id, item, false, electionId);
+                        await _candidateService.AddVote(item, voteResult.Data);
+                        await _electionService.AddVote(electionId, voteResult.Data);
+                        //await _electionService.AddUser(electionId, user.Id);
+                        await _service.SetVote(user.Id, voteResult.Data);
+                    }
+
+                    return new JsonResult(new
+                    {
+                        success = true,
+                        message = "رای شما با موفقیت ویرایش شد."
+                    });
                 }
-                foreach (var item in candidates)
+                else
                 {
-                    var voteResult = await _voteService.Create(user.VoteAccessNumber, user.Id, item, false, electionId);
-                    await _candidateService.AddVote(item, voteResult.Data);
-                    await _electionService.AddVote(electionId, voteResult.Data);
-                    //await _electionService.AddUser(electionId, user.Id);
-                    await _service.SetVote(user.Id, voteResult.Data);
+                    return new JsonResult(new
+                    {
+                        message = "عملیات غیر مجاز",
+                        success = false,
+                        description = "شما یکبار رای داده اید",
+                    });
                 }
 
-                return new JsonResult(new
-                {
-                    success = true,
-                    message = "رای شما با موفقیت ویرایش شد."
-                });
-                //return new JsonResult(new
-                //{
-                //    message = "عملیات غیر مجاز",
-                //    success = false,
-                //    description = "شما یکبار رای داده اید",
-                //});
             }
             await _service.SetFullName(user.Id, fullName);
             foreach (var item in candidates)

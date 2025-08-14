@@ -1,4 +1,5 @@
 ﻿using VotingLibrary.Core.Common;
+using VotingLibrary.Core.Services.NewFolder;
 using VotingLibrary.Core.Services.Services.DTOs;
 using VotingLibrary.Data.Entities;
 
@@ -16,6 +17,7 @@ namespace VotingLibrary.Core.Services.Interfaces
         Task<OperationResult> RemoveUser(Guid electionId, Guid candidateId, Guid userId);
         Task<OperationResult> ChangeIsActiveVisibility(Guid electionId);
         Task<Election> GetId(Guid electionId);
+        Task<ElectionModelForResultPage> GetIdForResultPage(Guid electionId);
         Task<ElectionFilterResult> GetFilter(ElectionFilterParam param);
 
     }

@@ -8,7 +8,7 @@ namespace VotingLibrary.Core.Services.Interfaces
     {
         Task<OperationResult> Login(string fullName, string phoneNumber);
         Task<OperationResult> Register(string fullName, string phoneNumber);
-        Task<OperationResult<Guid>> Create(string phoneNumber, int voteAccessNumber);
+        Task<OperationResult<Guid>> Create(string phoneNumber, int voteAccessNumber, string fullName);
         Task<OperationResult> SetVote(Guid userId, Guid voteId);
         Task<OperationResult> RemoveVote(Guid userId, Guid candidateId, Guid electionId);
         Task<OperationResult> SetFullName(Guid userId, string fullName);
@@ -16,7 +16,7 @@ namespace VotingLibrary.Core.Services.Interfaces
         Task<OperationResult> SetRole(Guid userId, Role role);
         Task<OperationResult> Edit(Guid userId, string phoneNumber, int voteAccessNumber);
         Task<User> GetId(Guid userId);
-        Task<User?> GetPhoneNumber(string phoneNumber, Guid electionId);
+        Task<User?> GetPhoneNumber(string phoneNumber, Guid electionId, string fullName);
         Task<UserFilterResult> GetFilterForAdmin(UserFilterParam param);
         Task<UserFilterResult> GetFilterForCandidateAdmin(UserFilterForCandidateParam param);
 

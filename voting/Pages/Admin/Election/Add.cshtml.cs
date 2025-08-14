@@ -81,7 +81,7 @@ namespace voting.Pages.Admin.Election
             foreach (var item in Voters!)
             {
                 var userResult = await _userService.Create(
-                     item.PhoneNumber, item.VoteAccessNumber);
+                     item.PhoneNumber, item.VoteAccessNumber, item.FullName);
                 await _electionService.AddUser(createElectionResult.Data, userResult.Data);
             }
 

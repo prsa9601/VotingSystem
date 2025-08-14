@@ -9,6 +9,7 @@ namespace voting.ViewModel.UserModel
         [Phone]
         //[IranianPhoneNumber]
         public string PhoneNumber { get; set; }
+        public string FullName { get; set; }
         public int VoteAccessNumber { get; set; }
 
     }

@@ -812,29 +812,51 @@
             const newRow = document.createElement('div');
             newRow.className = 'form-row voter-row';
             newRow.innerHTML = `
-                <div class="form-group">
-                    <label>شماره تلفن رای‌دهنده</label>
-                    <input type="tel" name="Voters[${index}].PhoneNumber" class="form-control" placeholder="09123456789" />
-                </div>
-                <div class="form-group">
-                    <label>تعداد واحدها</label>
-                    <input type="number" name="Voters[${index}].VoteAccessNumber" class="form-control" value="1" min="1" />
-                </div>
-                <div class="form-group" style="align-self: flex-end;">
-                    <button type="button" class="btn btn-danger remove-voter" style="margin-top: 1.8rem;">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            `;
+                    <div class="form-group">
+                <label>نام و نام خانوادگی</label>
+                <input type="text" name="Voters[${index}].FullName"
+                       class="form-control" placeholder="نام کامل رای‌دهنده" />
+            </div>
+            <div class="form-group">
+                <label>شماره تلفن</label>
+                <input type="tel" name="Voters[${index}].PhoneNumber"
+                       class="form-control" placeholder="09123456789" />
+            </div>
+            <div class="form-group">
+                <label>تعداد واحدها</label>
+                <input type="number" name="Voters[${index}].VoteAccessNumber"
+                       class="form-control" value="1" min="1" />
+            </div>
+            <div class="form-group" style="align-self: flex-end;">
+                <button type="button" class="btn btn-danger remove-voter" style="margin-top: 1.8rem;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
 
             container.appendChild(newRow);
         });
+
+        //             <div class="form-group">
+        //         <label>شماره تلفن رای‌دهنده</label>
+        //         <input type="tel" name="Voters[${index}].PhoneNumber" class="form-control" placeholder="09123456789" />
+        //     </div>
+        //     <div class="form-group">
+        //         <label>تعداد واحدها</label>
+        //         <input type="number" name="Voters[${index}].VoteAccessNumber" class="form-control" value="1" min="1" />
+        //     </div>
+        //     <div class="form-group" style="align-self: flex-end;">
+        //         <button type="button" class="btn btn-danger remove-voter" style="margin-top: 1.8rem;">
+        //             <i class="fas fa-trash"></i>
+        //         </button>
+        //     </div>
+        // `;
 
         // حذف کاندیدا
         document.addEventListener('click', function(e) {
             if (e.target.closest('.remove-candidate')) {
                 const row = e.target.closest('.candidate-row');
-                if (document.querySelectorAll('.candidate-row').length > 1) {
+                if (document.querySelectorAll('.candidate-row').length > 0) {
                     row.remove();
                     reindexFields('candidatesContainer', 'Candidates');
                 }
@@ -842,7 +864,7 @@
 
             if (e.target.closest('.remove-voter')) {
                 const row = e.target.closest('.voter-row');
-                if (document.querySelectorAll('.voter-row').length > 1) {
+                if (document.querySelectorAll('.voter-row').length > 0) {
                     row.remove();
                     reindexFields('votersContainer', 'Voters');
                 }

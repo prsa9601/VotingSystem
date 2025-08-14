@@ -1,7 +1,8 @@
-using Hangfire;
+﻿using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.RateLimiting;
 using VotingLibrary.Core.Services.Comands;
 using VotingLibrary.Core.Services.Interfaces;
 using VotingLibrary.Core.Services.Services;
@@ -38,6 +39,18 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/";
 });
+//builder.Services.AddRateLimiter(options =>
+//{
+//    options.AddPolicy("User", context =>
+//        RateLimitPartition.GetSlidingWindowLimiter(
+//            partitionKey: context.Connection.RemoteIpAddress?.ToString(),
+//            factory: _ => new SlidingWindowRateLimiterOptions
+//            {
+//                PermitLimit = 15, // حداکثر ۵ درخواست
+//                Window = TimeSpan.FromMinutes(1),
+//                SegmentsPerWindow = 2
+//            }));
+//});
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

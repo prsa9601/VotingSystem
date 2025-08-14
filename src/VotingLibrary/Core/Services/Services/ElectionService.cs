@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VotingLibrary.Core.Common;
 using VotingLibrary.Core.Services.Interfaces;
+using VotingLibrary.Core.Services.NewFolder;
 using VotingLibrary.Core.Services.Services.DTOs;
 using VotingLibrary.Data.Entities;
 using VotingLibrary.Data.Entities.Repository;
@@ -71,7 +72,7 @@ namespace VotingLibrary.Core.Services.Services
             await _repository.AddAsync(election);
             if (startTime > DateTime.Now)
             {
-                election.StarTimeHangfireId = _backgroundJob.Schedule(() => ActivateElection(election.Id), election.StartTime)??"";
+                election.StarTimeHangfireId = _backgroundJob.Schedule(() => ActivateElection(election.Id), election.StartTime) ?? "";
                 election.IsActive = false;
             }
             else
@@ -80,7 +81,7 @@ namespace VotingLibrary.Core.Services.Services
             }
             if (endTime > DateTime.Now)
             {
-                election.EndTimeHangfireId = _backgroundJob.Schedule(() => DeactivateElection(election.Id), election.EndTime)??"";
+                election.EndTimeHangfireId = _backgroundJob.Schedule(() => DeactivateElection(election.Id), election.EndTime) ?? "";
             }
             else
             {
@@ -239,9 +240,43 @@ namespace VotingLibrary.Core.Services.Services
                 users.AddRange(_context.Users.Where(i => i.VotesId.Any(x => x.Equals(item))));
 
             }
-            election.ClearUsers(users.Select(i=>i.Id).ToList());
+            election.ClearUsers(users.Select(i => i.Id).ToList());
             _context.SaveChanges();
             return OperationResult.Success();
+        }
+
+        public async Task<ElectionModelForResultPage> GetIdForResultPage(Guid electionId)
+        {
+            var election = await _context.Elections.
+                FirstOrDefaultAsync(i => i.Id.Equals(electionId)); ;
+
+            if (election == null)
+            {
+                return null;
+            }
+
+            var result = new ElectionModelForResultPage();
+            result.Title = election.Title;
+            result.AllVotes = election.VotesId.Count;
+
+            var candidates = _context.Candidates.Where(i => i.ElectionsId.
+                Any(x => x.Equals(electionId))).OrderByDescending(i => i.VotesId.Count());
+            if (candidates == null)
+            {
+                return null;
+            }
+            var topCandidates = candidates.Take(5).ToList();
+            int index = 0;
+            foreach (var item in candidates)
+            {
+                index++;
+                var votes = _context.Votes.Where(i => i.CandidateId
+                .Equals(item.Id) && i.ElectionId.Equals(electionId));
+                result.AddCandidate(item.FullName ?? item.PhoneNumber, index, votes.Count());
+            }
+            result.TopCandidates();
+            return result;
+
         }
     }
 }

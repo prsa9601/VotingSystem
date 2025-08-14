@@ -31,7 +31,7 @@ namespace VotingLibrary.Core.Services.Comands
             return OperationResult.Success();
         }
 
-        public async Task<OperationResult<Guid>> Create(string phoneNumber, int voteAccessNumber)
+        public async Task<OperationResult<Guid>> Create(string phoneNumber, int voteAccessNumber, string fullName)
         {
             //    if (_context.Users.Any(i => i.PhoneNumber.Equals(phoneNumber)))
             //    {
@@ -40,6 +40,7 @@ namespace VotingLibrary.Core.Services.Comands
             //    }
 
             var user = new User(phoneNumber, voteAccessNumber);
+            user.SetFullName(fullName);
             await _repository.AddAsync(user);
             await _repository.Save();
             return OperationResult<Guid>.Success(user.Id);
@@ -101,9 +102,9 @@ namespace VotingLibrary.Core.Services.Comands
             return user;
         }
 
-        public async Task<User?> GetPhoneNumber(string phoneNumber, Guid electionId)
+        public async Task<User?> GetPhoneNumber(string phoneNumber, Guid electionId, string fullName)
         {
-            var user = _context.Users.Where(i => i.PhoneNumber == phoneNumber.Trim()).ToList();
+            var user = _context.Users.Where(i => i.PhoneNumber == phoneNumber.Trim()&& i.FullName.Equals(fullName)).ToList();
             var election = await _context.Elections.FirstOrDefaultAsync(i => i.Id.Equals(electionId));
             User result = new User();
             foreach (var item in election.UsersId)
