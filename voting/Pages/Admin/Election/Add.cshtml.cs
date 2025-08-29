@@ -9,6 +9,7 @@ using voting.ViewModel.VoteModel;
 using VotingLibrary.Core.Common.Attribute;
 using VotingLibrary.Core.Services.Interfaces;
 using VotingLibrary.Data.Entities;
+using VotingLibrary.Data.Entities.Enums;
 
 namespace voting.Pages.Admin.Election
 {
@@ -29,6 +30,8 @@ namespace voting.Pages.Admin.Election
         }
         [BindProperty]
         public string ElectionTitle { get; set; }
+        [BindProperty]
+        public ElectionType ElectionType { get; set; }
         [BindProperty]
         [Required(ErrorMessage = "تاریخ شروع الزامی است")]
         [RegularExpression(@"^[\u06F0-\u06F9/]{10}$", ErrorMessage = "فرمت تاریخ نامعتبر است")]
@@ -66,7 +69,7 @@ namespace voting.Pages.Admin.Election
             //var date = DateTime.Now.AddDays(1);
             var createElectionResult = await _electionService.Create(
                 end, start
-                , ElectionTitle);
+                , ElectionTitle, ElectionType);
             foreach (var item in Candidates!)
             {
                 var createCandidateResult = await _candidateService.Create

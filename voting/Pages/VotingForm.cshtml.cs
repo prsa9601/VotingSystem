@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.RateLimiting;
 using voting.Util;
 using VotingLibrary.Core.Services.Interfaces;
 using VotingLibrary.Data.Entities;
+using VotingLibrary.Data.Entities.Enums;
+using static System.Collections.Specialized.BitVector32;
 
 namespace voting.Pages
 {
@@ -29,6 +31,7 @@ namespace voting.Pages
         public async Task<IActionResult> OnGet(Guid electionId)
         {
             Election = await _electionService.GetId(electionId);
+
             Candidates = await _candidateService.GetList(electionId);
             return Page();
         }
@@ -52,6 +55,15 @@ namespace voting.Pages
                     message = "زمان رای گیری تمام شده."
                 });
             }
+            int voteNumber = election.ElectionType switch
+            {
+                ElectionType.یک_رای => 1,
+                ElectionType.دو_رای => 2,
+                ElectionType.سه_رای => 3,
+                ElectionType.پنج_رای => 5,
+                _ => 3
+            };
+
             var user = await _service.GetPhoneNumber
                 (phoneNumber.StartsWith("0") ? phoneNumber : $"0{phoneNumber}", electionId, fullName);
 
@@ -71,14 +83,14 @@ namespace voting.Pages
                     message = "عملیات غیر مجاز."
                 });
             }
-            bool checkVote = VoteChecker.CheckVote(user.VoteAccessNumber, candidates);
+            bool checkVote = VoteChecker.CheckVote(user.VoteAccessNumber, candidates, election.ElectionType);
             if (!checkVote)
             {
                 return new JsonResult(new
                 {
                     message = "عملیات غیر مجاز",
                     success = false,
-                    description = $"شما حق  {user.VoteAccessNumber * 3} و {user.VoteAccessNumber}  رای تکراری دارید"
+                    description = $"شما حق  {user.VoteAccessNumber * voteNumber} و {user.VoteAccessNumber}  رای تکراری دارید"
 
                 });
             }

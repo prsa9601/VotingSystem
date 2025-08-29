@@ -8,6 +8,7 @@ using VotingLibrary.Core.Services.Interfaces;
 using VotingLibrary.Core.Services.NewFolder;
 using VotingLibrary.Core.Services.Services.DTOs;
 using VotingLibrary.Data.Entities;
+using VotingLibrary.Data.Entities.Enums;
 using VotingLibrary.Data.Entities.Repository;
 using VotingLibrary.Data.Persistent.Ef;
 
@@ -62,13 +63,13 @@ namespace VotingLibrary.Core.Services.Services
             return OperationResult.Success();
         }
 
-        public async Task<OperationResult<Guid>> Create(DateTime endTime, DateTime startTime, string title)
+        public async Task<OperationResult<Guid>> Create(DateTime endTime, DateTime startTime, string title, ElectionType electionType)
         {
             if (_context.Elections.Any(i => i.Title == title))
             {
                 return OperationResult<Guid>.Error("شما یکبار با این عنوان انتخابات ثبت کرده اید.");
             }
-            var election = new Election(endTime, startTime, title);
+            var election = new Election(endTime, startTime, title, electionType);
             await _repository.AddAsync(election);
             if (startTime > DateTime.Now)
             {
@@ -114,11 +115,13 @@ namespace VotingLibrary.Core.Services.Services
 
             if (param.IsFinished == true)
             {
-                result = _context.Elections.Where(i => i.IsActive == true);
+                result = _context.Elections.Where(i =>/* i.IsActive == true */
+                (i.StartTime < DateTime.Now && i.EndTime > DateTime.Now));
             }
             else if (param.IsFinished == false)
             {
-                result = _context.Elections.Where(i => i.IsActive == false);
+                result = _context.Elections.Where(i => /*i.IsActive == false*/
+                i.StartTime > DateTime.Now || i.EndTime < DateTime.Now);
             }
 
             var skip = (param.PageId - 1) * param.Take;

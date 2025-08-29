@@ -582,8 +582,9 @@
                     </div>
                     <div>
                         <div class="election-title">@Model.Election.Title</div>
+                        <div class="election-type">نوع انتخابات: @Model.Election.ElectionType.ToString().Replace("_", " ") براساس هر واحد</div>
                         <div class="election-date">
-                            تا @DateConverter.ConvertToPersianDate(Model.Election.EndTime)
+                            مهلت رأ‌ی‌دهی تا @DateConverter.ConvertToPersianDate(Model.Election.EndTime)
                         </div>
                     </div>
                 </div>

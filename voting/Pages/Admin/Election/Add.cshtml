@@ -1,4 +1,5 @@
 ﻿@page
+@using VotingLibrary.Data.Entities.Enums
 @model voting.Pages.Admin.Election.AddModel
 @{
     Layout = null;
@@ -636,6 +637,25 @@
             <!-- اطلاعات اصلی انتخابات -->
             <div class="form-container">
                 <h2><i class="fas fa-info-circle"></i> اطلاعات اصلی انتخابات</h2>
+                <div class="form-group">
+                    <label for="electionType">نوع انتخابات</label>
+                 @*    <select id="electionType" name="ElectionType" class="form-control" required>
+                        <option value="">-- لطفا انتخاب کنید --</option>
+                        <option value="1">1 رای</option>
+                        <option value="2">2 رای</option>
+                        <option value="3">3 رای</option>
+                        <option value="5">5 رای</option>
+                    </select> *@
+                    <select class="form-control" name="ElectionType" asp-items="Html.GetEnumSelectList<ElectionType>()" required>
+                      @*   <option value="">-- لطفا انتخاب کنید --</option>
+                        <option value="1">1 رای</option>
+                        <option value="2">2 رای</option>
+                        <option value="3">3 رای</option>
+                        <option value="5">5 رای</option> *@
+                    </select>
+                    @* <span class="text-danger" asp-validation-for="ElectionType"></span> *@
+                </div>
+
                 <div class="form-group">
                     <label for="electionTitle">عنوان انتخابات</label>
                     <input type="text" id="electionTitle" name="ElectionTitle" class="form-control"

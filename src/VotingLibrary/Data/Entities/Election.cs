@@ -1,4 +1,6 @@
-﻿namespace VotingLibrary.Data.Entities
+﻿using VotingLibrary.Data.Entities.Enums;
+
+namespace VotingLibrary.Data.Entities
 {
     public class Election : BaseClass
     {
@@ -7,6 +9,7 @@
         public DateTime EndTime { get; set; }
         public DateTime StartTime { get; set; }
         public bool IsActive { get; set; } = true;
+        public ElectionType ElectionType { get; set; }
         public List<Guid> CandidateId { get; set; }
         public List<Guid> UsersId { get; set; }
         public List<Guid> VotesId { get; set; }
@@ -17,7 +20,7 @@
         {
 
         }
-        public Election(DateTime endTime, DateTime startTime, string title)
+        public Election(DateTime endTime, DateTime startTime, string title, ElectionType electionType)
         {
             //Id = Guid.NewGuid();
             VotesId = new List<Guid>();
@@ -26,6 +29,7 @@
             Title = title;
             EndTime = endTime;
             StartTime = startTime;
+            ElectionType = electionType;
         }
         public void ChangeIsActiveVisibility() => IsActive = true ? IsActive = false : IsActive = true;
 

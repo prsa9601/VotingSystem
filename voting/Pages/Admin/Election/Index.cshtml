@@ -708,6 +708,7 @@
                             <th>عنوان انتخابات</th>
                             <th>تاریخ شروع</th>
                             <th>تاریخ پایان</th>
+                            <th>نوع انتخابات</th>
                             <th>تعداد کاندیداها</th>
                             <th>آراء ثبت شده</th>
                             <th>وضعیت</th>
@@ -730,9 +731,10 @@
                                 <td>@item.Title</td>
                                 <td>@DateConverter.ConvertToPersianDate(item.StartTime)</td>
                                 <td>@DateConverter.ConvertToPersianDate(item.EndTime)</td>
+                                <td>@item.ElectionType.ToString().Replace("_"," ")ه</td>
                                 <td>@item.CandidateId.Count()</td>
                                 <td>@item.VotesId.Count</td>
-                                <td><span class="status upcoming">@(item.IsActive == true ? "فعال" : "غیرفعال")</span></td>
+                                <td><span class="status upcoming">@((item.StartTime < DateTime.Now && item.EndTime > DateTime.Now) ? "فعال" : "غیرفعال")</span></td>
                                 <td>
                                     <button onclick="location.href='/Admin/Election/Detail/@item.Id'" class="action-btn" title="مشاهده"><i class="fas fa-eye"></i></button>
                                     <button onclick="deleteElection('@item.Id')" class="action-btn delete-btn" title="حذف">
