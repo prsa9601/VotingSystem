@@ -34,6 +34,8 @@ namespace voting.Pages.Admin.Candidate
         };
         [BindProperty(SupportsGet = true)]
         public UserFilterResult FilterResult { get; set; }
+        public long VotesNumber { get; set; }
+
         public VoteFilterResult VoteFilterResult { get; set; }
 
         [BindProperty]
@@ -63,16 +65,17 @@ namespace voting.Pages.Admin.Candidate
             {
                 candidateId = candidateId,
                 electionId = electionId,
-                PageId = PageId,
+                PageId = 1,
                 Take = 100000
 
             });
             FilterResult = await _userService.GetFilterForCandidateAdmin(new UserFilterForCandidateParam
             {
-                PageId = FilterParam.PageId,
-                Take = FilterParam.Take,
+                PageId = PageId,
+                Take = Take,
                 VoteIds = VoteFilterResult.Data.Select(i => i.Id).ToList(),
             });
+            VotesNumber = _candidateService.GetVoteNumberOneElection(candidateId, electionId);
             ElectionId = electionId;
             return Page();
         }

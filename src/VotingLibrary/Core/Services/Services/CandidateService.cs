@@ -172,5 +172,15 @@ namespace VotingLibrary.Core.Services.Services
             _context.SaveChanges();
             return OperationResult.Success();
         }
+        public long GetVoteNumberOneElection(Guid candidateId, Guid electionId)
+        {
+            var candidate = _context.Votes.Where
+                (i => i.ElectionId.Equals(electionId) && i.CandidateId.Equals(candidateId));
+            if (candidate == null)
+            {
+                return 0;
+            }
+            return candidate.Count();
+        }
     }
 }

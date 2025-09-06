@@ -1,4 +1,6 @@
 ﻿@page "{candidateId:Guid}/{electionId:Guid}"
+
+@* /{PageId:int}/{Take:int} *@
 @model voting.Pages.Admin.Candidate.DetailModel
 @{
     Layout = null;
@@ -648,7 +650,7 @@
 
                     <div class="candidate-meta">
                         <div class="meta-item">
-                            <i class="fas fa-vote-yea"></i> مجموع آراء: @(Model.FilterResult.Data.Sum(i => i.VotesId.Count())) رأی
+                            <i class="fas fa-vote-yea"></i> مجموع آراء: @(Model.VotesNumber) رأی
                         </div>
                         <div class="meta-item">
                             <i class="fas fa-user-friends"></i> تعداد رای‌دهندگان: @Model.FilterResult.EntityCount نفر
@@ -675,7 +677,7 @@
                     <i class="fas fa-vote-yea"></i>
                 </div>
                 <div class="stat-content">
-                    <div class="stat-value">@(Model.FilterResult.Data.Sum(i => i.VotesId.Count()))</div>
+                    <div class="stat-value">@(Model.VotesNumber)</div>
                     <div class="stat-label">مجموع آراء</div>
                 </div>
             </div>
@@ -734,8 +736,11 @@
                         @if (Model.FilterResult.CurrentPage > 1)
                         {
                             <li>
-                                <a href="?PageId=@(Model.FilterResult.CurrentPage - 1)&Take=@Model.FilterResult.Take"
-                                   class="pagination-link">
+                                <a class="pagination-link"
+                                   asp-route-candidateId="@Model.VoteFilterResult.Data.First().CandidateId"
+                                   asp-route-electionId="@Model.Election.Id"
+                                   asp-route-Take="@Model.FilterResult.Take"
+                                   asp-route-PageId="@(Model.FilterResult.CurrentPage - 1)">
                                     قبلی
                                 </a>
                             </li>
@@ -744,8 +749,11 @@
                         @for (int p = Model.FilterResult.StartPage; p <= Model.FilterResult.EndPage; p++)
                         {
                             <li>
-                                <a href="?PageId=@p&Take=@Model.FilterResult.Take"
-                                   class="pagination-link @(p == Model.FilterResult.CurrentPage ? "active" : "")">
+                                <a class="pagination-link @(p == Model.FilterResult.CurrentPage ? "active" : "")"
+                                   asp-route-candidateId="@Model.VoteFilterResult.Data.First().CandidateId"
+                                   asp-route-electionId="@Model.Election.Id"
+                                   asp-route-Take="@Model.FilterResult.Take"
+                                   asp-route-PageId="@p">
                                     @p
                                 </a>
                             </li>
@@ -754,8 +762,11 @@
                         @if (Model.FilterResult.CurrentPage < Model.FilterResult.PageCount)
                         {
                             <li>
-                                <a href="?PageId=@(Model.FilterResult.CurrentPage + 1)&Take=@Model.FilterResult.Take"
-                                   class="pagination-link">
+                                <a class="pagination-link"
+                                   asp-route-candidateId="@Model.VoteFilterResult.Data.First().CandidateId"
+                                   asp-route-electionId="@Model.Election.Id"
+                                   asp-route-Take="@Model.FilterResult.Take"
+                                   asp-route-PageId="@(Model.FilterResult.CurrentPage + 1)">
                                     بعدی
                                 </a>
                             </li>

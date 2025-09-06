@@ -17,5 +17,6 @@ namespace VotingLibrary.Core.Services.Interfaces
         Task<List<Candidate>?> GetList(Guid electionId);
         Task<CandidateFilterResult> GetFilter(CandidateFilterParam param);
 
+        long GetVoteNumberOneElection(Guid candidateId, Guid electionId);
     }
 }
